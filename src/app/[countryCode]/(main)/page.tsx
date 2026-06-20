@@ -25,16 +25,26 @@ const TrustStrip: React.FC = () => {
                 className="w-4 h-4 text-grayscale-500 shrink-0"
               />
               <span className="text-xs tracking-widest uppercase text-grayscale-600">
-                Delivering across Pakistan
+                Nationwide Delivery
               </span>
             </div>
             <div className="flex items-center gap-3 py-5 px-8 md:py-6 w-full md:w-auto md:flex-1 justify-center">
               <Icon
-                name="map-pin"
+                name="package"
                 className="w-4 h-4 text-grayscale-500 shrink-0"
               />
               <span className="text-xs tracking-widest uppercase text-grayscale-600">
-                Karachi-based brand
+                Premium Quality Fabrics
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3 py-5 px-8 md:py-6 w-full md:w-auto md:flex-1 justify-center">
+              <Icon
+                name="heart"
+                className="w-4 h-4 text-grayscale-500 shrink-0"
+              />
+              <span className="text-xs tracking-widest uppercase text-grayscale-600">
+                Loved by Thousands
               </span>
             </div>
           </div>
@@ -43,6 +53,7 @@ const TrustStrip: React.FC = () => {
     </div>
   )
 }
+
 
 const NewArrivalsSection: React.FC<{ countryCode: string }> = async ({
   countryCode,
@@ -92,12 +103,13 @@ const AboutBlurb: React.FC = () => {
         <LayoutColumn start={{ base: 1, md: 3 }} end={{ base: 13, md: 11 }}>
           <div className="flex flex-col items-center text-center gap-6 md:gap-8">
             <h2 className="text-base md:text-md font-medium tracking-widest uppercase">
-              About Juneberry
+              Our Story
             </h2>
             <p className="text-xs md:text-base text-grayscale-500 leading-loose max-w-prose">
-              Juneberry is a Karachi-based women&apos;s clothing brand offering
-              premium lawn, taftan, chiffon, and more — crafted with care for
-              the modern Pakistani woman.
+              The Juneberry was born from a love of fine fabric and timeless
+              silhouettes. We craft premium lawn —
+              each piece thoughtfully designed for the modern Pakistani woman who
+              wears her elegance effortlessly.
             </p>
             <LocalizedLink
               href="/store"

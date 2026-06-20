@@ -18,6 +18,7 @@ function PaginatedProducts({
   typeId,
   productsIds,
   countryCode,
+  q,
 }: {
   sortBy?: SortOptions
   page: number
@@ -26,9 +27,14 @@ function PaginatedProducts({
   typeId?: string | string[]
   productsIds?: string[]
   countryCode: string
+  q?: string
 }) {
   const queryParams: HttpTypes.StoreProductListParams = {
     limit: PRODUCT_LIMIT,
+  }
+
+  if (q) {
+    queryParams["q"] = q
   }
 
   if (collectionId) {

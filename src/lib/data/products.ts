@@ -159,3 +159,27 @@ export const getProductsListWithSort = async function ({
     queryParams,
   }
 }
+
+export const searchProducts = async function ({
+  query,
+  countryCode,
+}: {
+  query: string
+  countryCode: string
+}) {
+  const region = await getRegion(countryCode)
+  if (!region) return []
+
+  return sdk.client
+    .fetch<{ products: HttpTypes.StoreProduct[] }>(`/store/products`, {
+      query: {
+        q: query,
+        region_id: region.id,
+        fields: "*variants.calculated_price,+variants.inventory_quantity",
+        limit: 10,
+      } satisfies HttpTypes.StoreProductListParams,
+      next: { tags: ["products"] },
+    })
+    .then(({ products }) => products)
+}
+

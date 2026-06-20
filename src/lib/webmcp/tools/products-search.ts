@@ -1,5 +1,4 @@
 import { getProductsListWithSort } from "@lib/data/products"
-import { MeiliSearchProductHit, searchClient } from "@lib/search-client"
 import { getProductPrice } from "@lib/util/get-product-price"
 import { HttpTypes } from "@medusajs/types"
 import { WebMCPTool, WebMCPToolResult } from "../types"
@@ -57,14 +56,12 @@ export const productsSearch = async (
   }
 
   try {
-    const results = params.query
-      ? await searchClient
-          .index("products")
-          .search<MeiliSearchProductHit>(params.query)
-      : null
-
     const queryParams: HttpTypes.StoreProductListParams = {
       limit: Math.min(36, params.limit || 12),
+    }
+
+    if (params.query) {
+      queryParams["q"] = params.query
     }
 
     if (params.collection_ids && params.collection_ids.length) {
@@ -77,10 +74,6 @@ export const productsSearch = async (
 
     if (params.type_ids) {
       queryParams["type_id"] = params.type_ids
-    }
-
-    if (results) {
-      queryParams["id"] = results.hits.map((h) => h.id)
     }
 
     if (params.sort === "latest_arrivals") {
