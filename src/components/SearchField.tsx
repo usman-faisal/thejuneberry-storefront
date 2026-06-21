@@ -55,7 +55,7 @@ export const SearchField: React.FC<{
       }
       const medusaProducts = await searchProducts({
         query: filterText,
-        countryCode,
+        countryCode: countryCode ?? 'pk'
       })
 
       return {

@@ -37,7 +37,6 @@ const TrustStrip: React.FC = () => {
                 Premium Quality Fabrics
               </span>
             </div>
-
             <div className="flex items-center gap-3 py-5 px-8 md:py-6 w-full md:w-auto md:flex-1 justify-center">
               <Icon
                 name="heart"
@@ -62,7 +61,7 @@ const NewArrivalsSection: React.FC<{ countryCode: string }> = async ({
     response: { products },
   } = await getProductsList({
     pageParam: 1,
-    queryParams: { limit: 8, handle: 'new-arrivals' },
+    queryParams: { limit: 8, collection_id: 'new-arrivals' },
     countryCode,
   })
 
