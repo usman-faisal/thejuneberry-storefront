@@ -14,6 +14,9 @@ export const metadata: Metadata = {
     template: "%s | The Juneberry",
   },
   description: "Premium Pakistani women's clothing — lawn, chiffon, luxury cotton collections with nationwide delivery.",
+  icons: {
+    icon: "/images/content/logo.jpg",
+  },
   openGraph: {
     title: {
       default: "The Juneberry | Premium Pakistani Women's Clothing",
