@@ -12,19 +12,36 @@ export default function ProductPreview({
     product,
   })
 
+  // Check if any variant has a compare_at_price set
+  const hasCompareAtPrice = product.variants?.some(
+    (v) =>
+      v.calculated_price?.original_amount &&
+      v.calculated_price.original_amount >
+        (v.calculated_price.calculated_amount ?? 0)
+  )
+
   const hasReducedPrice =
     cheapestPrice &&
     cheapestPrice.calculated_price_number <
       (cheapestPrice?.original_price_number || 0)
 
+  const isSale = hasReducedPrice || hasCompareAtPrice
+
   return (
     <LocalizedLink href={`/products/${product.handle}`}>
-      <Thumbnail
-        thumbnail={product.thumbnail}
-        images={product.images}
-        size="square"
-        className="mb-4 md:mb-6"
-      />
+      <div className="relative">
+        <Thumbnail
+          thumbnail={product.thumbnail}
+          images={product.images}
+          size="square"
+          className="mb-4 md:mb-6"
+        />
+        {isSale && (
+          <span className="absolute top-2 left-2 z-10 bg-black text-white text-[10px] tracking-widest uppercase font-medium px-2 py-0.5 rounded-sm">
+            Sale
+          </span>
+        )}
+      </div>
       <div className="flex justify-between max-md:flex-col">
         <div className="max-md:text-xs">
           <p className="mb-1">{product.title}</p>
@@ -36,11 +53,11 @@ export default function ProductPreview({
         </div>
         {cheapestPrice ? (
           hasReducedPrice ? (
-            <div>
-              <p className="font-semibold max-md:text-xs text-red-primary">
+            <div className="text-right max-md:text-left">
+              <p className="font-semibold max-md:text-xs text-black">
                 {cheapestPrice.calculated_price}
               </p>
-              <p className="max-md:text-xs text-grayscale-500 line-through">
+              <p className="max-md:text-xs text-grayscale-400 line-through text-sm">
                 {cheapestPrice.original_price}
               </p>
             </div>

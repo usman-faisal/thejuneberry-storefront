@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import Image from "next/image"
 import type { HttpTypes } from "@medusajs/types"
@@ -22,7 +24,13 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
   className,
   "data-testid": dataTestid,
 }) => {
-  const initialImage = thumbnail || images?.[0]?.url
+  const [hovered, setHovered] = React.useState(false)
+
+  const primaryImage = thumbnail || images?.[0]?.url
+  const hoverImage = images?.[1]?.url
+
+  const displayImage =
+    hovered && hoverImage ? hoverImage : primaryImage
 
   return (
     <div
@@ -39,8 +47,10 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
         size === "full" && "w-full"
       )}
       data-testid={dataTestid}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
-      <ImageOrPlaceholder image={initialImage} size={size} />
+      <ImageOrPlaceholder image={displayImage} size={size} />
     </div>
   )
 }
@@ -53,7 +63,7 @@ const ImageOrPlaceholder = ({
     <Image
       src={image}
       alt="Thumbnail"
-      className="absolute inset-0 object-cover object-center"
+      className="absolute inset-0 object-cover object-center transition-opacity duration-300"
       draggable={false}
       quality={50}
       sizes="(max-width: 576px) 280px, (max-width: 768px) 360px, (max-width: 992px) 480px, 800px"
