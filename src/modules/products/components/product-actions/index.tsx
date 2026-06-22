@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/Select"
 import { useCountryCode } from "hooks/country-code"
 import ProductPrice from "@modules/products/components/product-price"
+import { getProductPrice } from "@lib/util/get-product-price"
 import { UiRadioGroup } from "@/components/ui/Radio"
 import { withReactQueryProvider } from "@lib/util/react-query"
 import { useAddLineItem } from "hooks/cart"
@@ -23,6 +24,8 @@ import { UiDialogTrigger, UiDialog, UiCloseButton } from "@/components/Dialog"
 import { UiModalOverlay, UiModal } from "@/components/ui/Modal"
 import { Icon } from "@/components/Icon"
 import { useRouter, useSearchParams } from "next/navigation"
+
+const WHATSAPP_NUMBER = "923313365411"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -164,7 +167,7 @@ function CartNotification({
         }}
       >
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
       </button>
 
@@ -184,7 +187,7 @@ function CartNotification({
           }}
         >
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M2 7l3.5 3.5L12 3" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M2 7l3.5 3.5L12 3" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
         <p style={{ fontSize: "13px", fontWeight: 500, margin: 0, lineHeight: 1.4 }}>
@@ -330,6 +333,7 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
   const [quantity, setQuantity] = useState(1)
   const countryCode = useCountryCode()
   const [showNotification, setShowNotification] = useState(false)
+  const [whatsAppError, setWhatsAppError] = useState<string | null>(null)
 
   const { mutateAsync, isPending } = useAddLineItem()
 
@@ -411,6 +415,45 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
       ...prev,
       [optionId]: value,
     }))
+    setWhatsAppError(null)
+  }
+
+  const handleWhatsAppOrder = () => {
+    const sizeOption = productOptions.find(
+      (option) => normalizeOptionTitle(option.title) === "size"
+    )
+    const selectedSize = sizeOption ? options[sizeOption.id] : undefined
+
+    if (sizeOption && !selectedSize) {
+      setWhatsAppError("Please select a size first")
+      return
+    }
+
+    setWhatsAppError(null)
+
+    if (!selectedVariant) return
+
+    const { variantPrice } = getProductPrice({
+      product,
+      variantId: selectedVariant.id,
+    })
+
+    const priceString = variantPrice
+      ? (variantPrice.calculated_price.includes("Rs") || variantPrice.calculated_price.includes("PKR")
+        ? variantPrice.calculated_price
+        : `Rs. ${variantPrice.calculated_price_number}`)
+      : ""
+
+    const message = `Hi! I'd like to order:
+
+Product: ${product.title}
+Size: ${selectedSize || "N/A"}
+Price: ${priceString}
+
+Please confirm availability.`
+
+    const encodedMessage = encodeURIComponent(message)
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`, "_blank")
   }
 
   // check if the selected variant is in stock
@@ -456,8 +499,8 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
   const otherOptions =
     materialOption && colorOption
       ? productOptions.filter(
-          (o) => o.id !== materialOption.id && o.id !== colorOption.id
-        )
+        (o) => o.id !== materialOption.id && o.id !== colorOption.id
+      )
       : productOptions
 
   const selectedMaterial =
@@ -500,7 +543,7 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
       <div className="mb-8 md:mb-12">
         <UiDialogTrigger>
           <Button variant="unstyled" className="group inline-flex items-center gap-2 border border-grayscale-200 hover:border-black transition-colors px-4 py-2 text-xs tracking-widest uppercase font-medium text-grayscale-600 hover:text-black rounded-none">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 6H3"/><path d="M10 12H3"/><path d="M10 18H3"/><circle cx="17" cy="15" r="3"/><path d="m21 19-1.9-1.9"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 6H3" /><path d="M10 12H3" /><path d="M10 18H3" /><circle cx="17" cy="15" r="3" /><path d="m21 19-1.9-1.9" /></svg>
             Size Chart
           </Button>
           <UiModalOverlay>
@@ -528,7 +571,7 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
         </UiDialogTrigger>
       </div>
       {hasMultipleVariants && (
-        <div className="flex flex-col gap-8 md:gap-6 mb-4 md:mb-12">
+        <div className="flex flex-col gap-8 md:gap-6">
           {materialOption && colorOption && (
             <>
               <div>
@@ -610,7 +653,9 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
 
                 return (
                   <div key={option.id}>
-
+                    <p className="mb-4">
+                      {option.title}
+                    </p>
                     <div className="flex flex-wrap gap-3">
                       {sizeValues.map((value) => {
                         const isSelected = options[option.id] === value.value
@@ -683,7 +728,10 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
             })}
         </div>
       )}
-      <div className="flex items-stretch gap-4">
+      <div className="mt-4 items-stretch gap-4">
+        <p className="mb-4">
+          Quantity
+        </p>
         <InputNumberField
           isDisabled={
             !itemsInStock || !selectedVariant || !!disabled || isPending
@@ -695,6 +743,8 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
           className="w-35 shrink-0 max-md:justify-center max-md:gap-2"
           aria-label="Quantity"
         />
+      </div>
+      <div className="flex mt-4">
         <Button
           onPress={handleAddToCart}
           isDisabled={!itemsInStock || !selectedVariant || !!disabled}
@@ -707,6 +757,30 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
               ? "Out of stock"
               : "Add to cart"}
         </Button>
+      </div>
+      {whatsAppError && (
+        <p className="text-red-primary text-xs mt-2 font-medium">
+          {whatsAppError}
+        </p>
+      )}
+      <div className="mt-4">
+        <button
+          onClick={handleWhatsAppOrder}
+          disabled={!!disabled}
+          className="flex-1 w-full bg-[#25D366] hover:bg-[#20ba5a] text-white flex items-center justify-center gap-2 py-3 px-6 text-sm tracking-widest uppercase font-medium transition-colors rounded-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed h-12"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="w-5 h-5"
+          >
+            <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 0 0 1.335 4.978L2 22l5.177-1.356a9.946 9.946 0 0 0 4.832 1.252h.005c5.505 0 9.989-4.479 9.99-9.986 0-2.67-1.037-5.18-2.92-7.065A9.925 9.925 0 0 0 12.012 2zm5.72 14.102c-.313.882-1.815 1.626-2.501 1.712-.613.077-1.42.138-2.287-.138-3.555-1.134-5.834-4.708-6.012-4.945-.178-.236-1.442-1.923-1.442-3.67 0-1.748.887-2.612 1.221-2.964.33-.353.729-.441.972-.441.243 0 .487.001.699.01.222.01.522-.083.816.621.3.717 1.026 2.502 1.114 2.68.089.177.148.383.03.621-.118.238-.178.383-.355.59-.177.206-.372.459-.53.616-.178.176-.364.368-.157.721.206.353.916 1.51 1.968 2.448 1.357 1.21 2.506 1.584 2.86 1.761.354.177.56.147.768-.089.206-.236.885-1.029 1.121-1.382.236-.353.471-.294.796-.176.324.118 2.062 1.029 2.416 1.206.354.177.59.265.679.412.088.147.088.853-.225 1.735z" />
+          </svg>
+          Order via WhatsApp
+        </button>
       </div>
     </>
   )
