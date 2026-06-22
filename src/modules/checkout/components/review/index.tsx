@@ -1,12 +1,10 @@
 "use client"
 
-import { useEffect } from "react"
 import { twJoin } from "tailwind-merge"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 import { Button } from "@/components/Button"
 import PaymentButton from "@modules/checkout/components/payment-button"
-import { useInitiatePaymentSession } from "hooks/cart"
 import { StoreCart } from "@medusajs/types"
 
 const Review = ({ cart }: { cart: StoreCart }) => {
@@ -16,28 +14,14 @@ const Review = ({ cart }: { cart: StoreCart }) => {
 
   const isOpen = searchParams.get("step") === "review"
 
-  const initiatePaymentSession = useInitiatePaymentSession()
-  const activeSession = cart?.payment_collection?.payment_sessions?.find(
-    (s) => s.status === "pending"
-  )
   const hasDefaultSession = cart?.payment_collection?.payment_sessions?.some(
     (s) => s.provider_id === "pp_system_default"
   )
 
-  useEffect(() => {
-    if (isOpen && activeSession?.provider_id !== "pp_system_default") {
-      initiatePaymentSession.mutate({ providerId: "pp_system_default" })
-    }
-  }, [isOpen, activeSession, initiatePaymentSession])
-
-  // const paidByGiftcard =
-  //   cart?.gift_cards && cart?.gift_cards?.length > 0 && cart?.total === 0
   const previousStepsCompleted =
     cart.shipping_address &&
     cart.shipping_methods &&
     cart.shipping_methods.length > 0
-  // &&
-  // cart.payment_collection
 
   return (
     <>
@@ -73,7 +57,7 @@ const Review = ({ cart }: { cart: StoreCart }) => {
             We will prepare your premium fabric and nationwide delivery will arrive within 3-5 working days.
             Thank you for shopping with The Juneberry!
           </p>
-          {!hasDefaultSession || initiatePaymentSession.isPending ? (
+          {!hasDefaultSession ? (
             <Button className="w-full" isDisabled isLoading>
               Loading review...
             </Button>
@@ -81,8 +65,7 @@ const Review = ({ cart }: { cart: StoreCart }) => {
             <PaymentButton
               cart={cart}
               selectPaymentMethod={() => {
-                // Commented out redirect to payment step since it is skipped
-                // router.push(pathname + "?step=payment", { scroll: false })
+                // Payment step skipped — COD is always used
               }}
             />
           )}
