@@ -4,8 +4,8 @@ import { SortOptions } from "@modules/store/components/refinement-list/sort-prod
 import StoreTemplate from "@modules/store/templates"
 
 export const metadata: Metadata = {
-  title: "Shop All",
-  description: "Explore the latest collection of premium women's clothing at The Juneberry, including lawn, chiffon, luxury cotton, and more.",
+  title: "Shop All Replicas",
+  description: "Explore our complete range of premium master copies. Shop high-quality replicas of Khaadi, Ethnic, Afrozah, and more.",
 }
 
 type Params = {

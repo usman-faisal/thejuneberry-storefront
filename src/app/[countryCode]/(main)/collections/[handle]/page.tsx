@@ -73,7 +73,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const desc =
     collectionDetails.success && collectionDetails.data.description
       ? collectionDetails.data.description
-      : `Explore the ${collection.title} collection of premium Pakistani women's clothing at The Juneberry.`
+      : `Explore the ${collection.title} collection at The Juneberry. Premium master copies and high-quality replicas of your favorite brands.`
 
   const metadata = {
     title,

@@ -68,7 +68,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const title = product.title
-  const desc = product.description || `Shop ${product.title} at The Juneberry — premium Pakistani women's clothing.`
+  const desc = product.description || `Shop ${product.title} at The Juneberry — premium master copy and designer replica.`
 
   return {
     title,

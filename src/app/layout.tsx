@@ -10,19 +10,19 @@ import { WebMCPProvider } from "@lib/webmcp/WebMCPProvider"
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
   title: {
-    default: "The Juneberry | Premium Pakistani Women's Clothing",
-    template: "%s | The Juneberry",
+    default: "The Juneberry | Premium Master Copies & Designer Replicas",
+    template: "%s | The Juneberry - Premium Designer Replicas",
   },
-  description: "Premium Pakistani women's clothing — lawn, chiffon, luxury cotton collections with nationwide delivery.",
+  description: "Shop the finest quality master copies and replicas of famous Pakistani brands like Khaadi, Ethnic, and Afrozah. Premium designer replicas delivered to your doorstep.",
   icons: {
     icon: "/images/content/logo.jpg",
   },
   openGraph: {
     title: {
-      default: "The Juneberry | Premium Pakistani Women's Clothing",
-      template: "%s | The Juneberry",
+      default: "The Juneberry | Premium Master Copies & Designer Replicas",
+      template: "%s | The Juneberry - Premium Designer Replicas",
     },
-    description: "Premium Pakistani women's clothing — lawn, chiffon, luxury cotton collections with nationwide delivery.",
+    description: "Shop the finest quality master copies and replicas of famous Pakistani brands like Khaadi, Ethnic, and Afrozah. Premium designer replicas delivered to your doorstep.",
     siteName: "The Juneberry",
     images: [
       {
@@ -38,10 +38,10 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: {
-      default: "The Juneberry | Premium Pakistani Women's Clothing",
-      template: "%s | The Juneberry",
+      default: "The Juneberry | Premium Master Copies & Designer Replicas",
+      template: "%s | The Juneberry - Premium Designer Replicas",
     },
-    description: "Premium Pakistani women's clothing — lawn, chiffon, luxury cotton collections.",
+    description: "Shop the finest quality master copies and replicas of famous Pakistani brands like Khaadi, Ethnic, and Afrozah. Premium designer replicas delivered to your doorstep.",
     images: ["/images/content/juneberry_hero.png"],
   },
 }

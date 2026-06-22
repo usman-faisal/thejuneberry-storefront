@@ -12,8 +12,8 @@ type Props = {
 }
 
 export const metadata: Metadata = {
-  title: "Search",
-  description: "Search for products",
+  title: "Search Replicas",
+  description: "Search our collection of premium designer master copies and replicas.",
 }
 
 export default async function SearchPage({ params, searchParams }: Props) {

@@ -8,10 +8,10 @@ import ProductsGrid from "@modules/products/components/products-grid"
 
 export const metadata: Metadata = {
   title: {
-    absolute: "The Juneberry | Premium Pakistani Women's Clothing",
+    absolute: "The Juneberry | High-Quality Designer Replicas & Master Copies",
   },
   description:
-    "Discover premium Pakistani women's clothing at The Juneberry. Shop the latest lawn, chiffon, and luxury cotton collections.",
+    "Discover premium master copies and 1st copy replicas of top Pakistani designer brands. Shop our collection of Khaadi, Ethnic, and Afrozah replicas at unbeatable prices.",
 }
 
 const PAGE_SIZE = 9
@@ -39,7 +39,7 @@ export default async function Home({
 
   return (
     <>
-      <h1 className="sr-only">The Juneberry | Premium Pakistani Women&apos;s Clothing</h1>
+      <h1 className="sr-only">The Juneberry | Premium Pakistani Designer Replicas & Master Copies</h1>
       {/* Hero — slightly reduced height */}
       <div className="relative max-md:pt-18 w-full">
         <Image
