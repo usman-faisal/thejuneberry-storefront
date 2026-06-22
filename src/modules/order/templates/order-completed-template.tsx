@@ -81,8 +81,7 @@ Total: Rs. ${totalPrice}
           and will be processed shortly.
         </p>
         <p className="mb-8">
-          We have sent you the receipt and order details via{" "}
-          <strong>e-mail</strong>.<br />
+          Please click the button below to confirm your order via <strong>WhatsApp</strong>.<br />
           Your order number is <strong>#{order.display_id}</strong>.
         </p>
         <div className="mb-6">
