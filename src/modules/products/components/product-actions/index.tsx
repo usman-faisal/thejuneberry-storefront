@@ -50,10 +50,13 @@ const optionsAsKeymap = (
   }, {})
 }
 
-const priorityOptions = ["Material", "Color", "Size"]
+const priorityOptions = ["material", "color", "size"]
 
 const normalizeOptionKey = (key: string) =>
   key.trim().toLowerCase().replace(/\s+/g, "_")
+
+const normalizeOptionTitle = (title: string | null | undefined) =>
+  title?.trim().toLowerCase() ?? ""
 
 const getInitialOptions = (product: ProductActionsProps["product"]) => {
   if (product.variants?.length === 1) {
@@ -430,8 +433,8 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
 
   const hasMultipleVariants = (product.variants?.length ?? 0) > 1
   const productOptions = (product.options || []).sort((a, b) => {
-    let aPriority = priorityOptions.indexOf(a.title ?? "")
-    let bPriority = priorityOptions.indexOf(b.title ?? "")
+    let aPriority = priorityOptions.indexOf(normalizeOptionTitle(a.title))
+    let bPriority = priorityOptions.indexOf(normalizeOptionTitle(b.title))
 
     if (aPriority === -1) {
       aPriority = priorityOptions.length
@@ -444,8 +447,12 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
     return aPriority - bPriority
   })
 
-  const materialOption = productOptions.find((o) => o.title === "Material")
-  const colorOption = productOptions.find((o) => o.title === "Color")
+  const materialOption = productOptions.find(
+    (o) => normalizeOptionTitle(o.title) === "material"
+  )
+  const colorOption = productOptions.find(
+    (o) => normalizeOptionTitle(o.title) === "color"
+  )
   const otherOptions =
     materialOption && colorOption
       ? productOptions.filter(
@@ -459,7 +466,9 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
       : undefined
 
   useEffect(() => {
-    const sizeOption = productOptions.find((option) => option.title === "Size")
+    const sizeOption = productOptions.find(
+      (option) => normalizeOptionTitle(option.title) === "size"
+    )
     const firstSizeValue = sizeOption?.values?.find((value) => Boolean(value.value))
 
     if (sizeOption && firstSizeValue && !options[sizeOption.id]) {
@@ -592,7 +601,7 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
           )}
           {showOtherOptions &&
             otherOptions.map((option) => {
-              const isSizeOption = option.title === "Size"
+              const isSizeOption = normalizeOptionTitle(option.title) === "size"
 
               if (isSizeOption) {
                 const sizeValues = (option.values ?? []).filter((value) =>
