@@ -1,90 +1,27 @@
 "use client"
 
-import { useEffect, useRef } from "react"
-import { twJoin } from "tailwind-merge"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
-
-import { Button } from "@/components/Button"
-import PaymentButton from "@modules/checkout/components/payment-button"
-import { useInitiatePaymentSession } from "hooks/cart"
 import { StoreCart } from "@medusajs/types"
+import { Button } from "@/components/Button"
 
-const Review = ({ cart }: { cart: StoreCart }) => {
-  const searchParams = useSearchParams()
-  const router = useRouter()
-  const pathname = usePathname()
-
-  const isOpen = searchParams.get("step") === "review"
-
-  const hasDefaultSession = cart?.payment_collection?.payment_sessions?.some(
-    (s) => s.provider_id === "pp_system_default"
-  )
-
-  const initiatePaymentSession = useInitiatePaymentSession()
-  // Ref guard prevents infinite re-triggering — fires at most once per mount
-  const hasInitiated = useRef(false)
-
-  useEffect(() => {
-    if (isOpen && !hasDefaultSession && !hasInitiated.current && !initiatePaymentSession.isPending) {
-      hasInitiated.current = true
-      initiatePaymentSession.mutate({ providerId: "pp_system_default" })
-    }
-  }, [isOpen, hasDefaultSession]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const previousStepsCompleted =
-    cart.shipping_address &&
-    cart.shipping_methods &&
-    cart.shipping_methods.length > 0
-
+const Review = ({ cart, isPlacingOrder }: { cart: StoreCart, isPlacingOrder: boolean }) => {
   return (
-    <>
-      <div className="flex justify-between mb-6 md:mb-8 border-t border-grayscale-200 pt-8 mt-8">
-        <div>
-          <p
-            className={twJoin(
-              "transition-fontWeight duration-75",
-              isOpen && "font-semibold"
-            )}
-          >
-            3. Review
-          </p>
-        </div>
-        {!isOpen &&
-          previousStepsCompleted &&
-          cart?.shipping_address &&
-          cart?.billing_address && (
-            <Button
-              variant="link"
-              onPress={() => {
-                router.push(pathname + "?step=review", { scroll: false })
-              }}
-            >
-              View
-            </Button>
-          )}
-      </div>
-      {isOpen && previousStepsCompleted && (
-        <>
-          <p className="mb-8">
-            By clicking the Place Order button, you confirm your order with Cash on Delivery (COD).
-            We will prepare your premium fabric and nationwide delivery will arrive within 3-5 working days.
-            Thank you for shopping with The Juneberry!
-          </p>
-          {!hasDefaultSession || initiatePaymentSession.isPending ? (
-            <Button className="w-full" isDisabled isLoading>
-              Preparing order...
-            </Button>
-          ) : (
-            <PaymentButton
-              cart={cart}
-              selectPaymentMethod={() => {
-                // Payment step skipped — COD is always used
-              }}
-            />
-          )}
-        </>
-      )}
-    </>
+    <div>
+      <p className="mb-6 text-sm text-grayscale-500 leading-relaxed">
+        By clicking the Place Order button, you confirm your order with Cash on Delivery (COD).
+        We will prepare your premium fabric and nationwide delivery will arrive within 3-5 working days.
+        Thank you for shopping with The Juneberry!
+      </p>
+
+      <Button
+        type="submit"
+        form="checkout-addresses-form"
+        className="w-full"
+        isLoading={isPlacingOrder}
+        isDisabled={isPlacingOrder}
+      >
+        Place order
+      </Button>
+    </div>
   )
 }
 

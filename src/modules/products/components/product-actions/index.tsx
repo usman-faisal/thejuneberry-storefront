@@ -1,10 +1,9 @@
 "use client"
 
 import { isEqual } from "lodash"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { HttpTypes } from "@medusajs/types"
 import * as ReactAria from "react-aria-components"
-import { useSearchParams } from "next/navigation"
 import { getVariantItemsInStock } from "@lib/util/inventory"
 import { Button } from "@/components/Button"
 import { InputNumberField } from "@/components/InputNumberField"
@@ -23,6 +22,7 @@ import { useAddLineItem } from "hooks/cart"
 import { UiDialogTrigger, UiDialog, UiCloseButton } from "@/components/Dialog"
 import { UiModalOverlay, UiModal } from "@/components/ui/Modal"
 import { Icon } from "@/components/Icon"
+import { useRouter, useSearchParams } from "next/navigation"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -79,6 +79,246 @@ const getInitialOptions = (product: ProductActionsProps["product"]) => {
   return null
 }
 
+// ─── Cart Notification ───────────────────────────────────────────────────────
+
+type CartNotificationProps = {
+  productTitle: string
+  productThumbnail?: string | null
+  countryCode: string
+  onDismiss: () => void
+}
+
+function CartNotification({
+  productTitle,
+  productThumbnail,
+  countryCode,
+  onDismiss,
+}: CartNotificationProps) {
+  const router = useRouter()
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [exiting, setExiting] = useState(false)
+
+  const dismiss = () => {
+    setExiting(true)
+    setTimeout(() => {
+      onDismiss()
+    }, 320)
+  }
+
+  useEffect(() => {
+    timerRef.current = setTimeout(() => {
+      dismiss()
+    }, 6000)
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: "calc(var(--header-height, 72px) + 16px)",
+        right: "16px",
+        zIndex: 9999,
+        width: "min(380px, calc(100vw - 32px))",
+        background: "#ffffff",
+        border: "1px solid #e5e5e5",
+        boxShadow: "0 8px 40px rgba(0,0,0,0.13)",
+        borderRadius: "4px",
+        padding: "20px",
+        animation: exiting
+          ? "slideOutRight 0.32s cubic-bezier(0.4,0,1,1) forwards"
+          : "slideInRight 0.38s cubic-bezier(0,0,0.2,1) forwards",
+      }}
+    >
+      <style>{`
+        @keyframes slideInRight {
+          from { opacity: 0; transform: translateX(110%); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideOutRight {
+          from { opacity: 1; transform: translateX(0); }
+          to   { opacity: 0; transform: translateX(110%); }
+        }
+      `}</style>
+
+      {/* Close */}
+      <button
+        onClick={dismiss}
+        aria-label="Dismiss"
+        style={{
+          position: "absolute",
+          top: "12px",
+          right: "12px",
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          padding: "4px",
+          color: "#888",
+          lineHeight: 1,
+        }}
+      >
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+      </button>
+
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+        {/* Check icon */}
+        <div
+          style={{
+            width: "28px",
+            height: "28px",
+            borderRadius: "50%",
+            background: "#000",
+            flexShrink: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7l3.5 3.5L12 3" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+        <p style={{ fontSize: "13px", fontWeight: 500, margin: 0, lineHeight: 1.4 }}>
+          Added to cart
+        </p>
+      </div>
+
+      {/* Product row */}
+      <div style={{ display: "flex", gap: "12px", marginBottom: "20px", alignItems: "center" }}>
+        {productThumbnail ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={productThumbnail}
+            alt={productTitle}
+            style={{
+              width: "56px",
+              height: "56px",
+              objectFit: "cover",
+              borderRadius: "2px",
+              background: "#f5f5f5",
+              flexShrink: 0,
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              width: "56px",
+              height: "56px",
+              background: "#f5f5f5",
+              borderRadius: "2px",
+              flexShrink: 0,
+            }}
+          />
+        )}
+        <p
+          style={{
+            fontSize: "13px",
+            color: "#222",
+            margin: 0,
+            lineHeight: 1.4,
+            fontWeight: 400,
+          }}
+        >
+          {productTitle}
+        </p>
+      </div>
+
+      {/* Actions */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <button
+          onClick={() => {
+            dismiss()
+            router.push(`/${countryCode}/checkout`)
+          }}
+          style={{
+            width: "100%",
+            padding: "10px 16px",
+            background: "#000",
+            color: "#fff",
+            border: "none",
+            borderRadius: "2px",
+            fontSize: "12px",
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+            fontWeight: 500,
+            cursor: "pointer",
+            transition: "opacity 0.15s",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.85")}
+          onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+        >
+          Checkout
+        </button>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+          <button
+            onClick={() => {
+              dismiss()
+              router.push(`/${countryCode}/cart`)
+            }}
+            style={{
+              padding: "9px 12px",
+              background: "transparent",
+              color: "#000",
+              border: "1px solid #000",
+              borderRadius: "2px",
+              fontSize: "11px",
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              fontWeight: 500,
+              cursor: "pointer",
+              transition: "background 0.15s, color 0.15s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#000"
+              e.currentTarget.style.color = "#fff"
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent"
+              e.currentTarget.style.color = "#000"
+            }}
+          >
+            View Cart
+          </button>
+          <button
+            onClick={dismiss}
+            style={{
+              padding: "9px 12px",
+              background: "transparent",
+              color: "#666",
+              border: "1px solid #e5e5e5",
+              borderRadius: "2px",
+              fontSize: "11px",
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              fontWeight: 500,
+              cursor: "pointer",
+              transition: "border-color 0.15s, color 0.15s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "#999"
+              e.currentTarget.style.color = "#333"
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "#e5e5e5"
+              e.currentTarget.style.color = "#666"
+            }}
+          >
+            Continue
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
 function ProductActions({ product, materials, disabled }: ProductActionsProps) {
   const searchParams = useSearchParams()
   const [options, setOptions] = useState<Record<string, string | undefined>>(
@@ -86,6 +326,7 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
   )
   const [quantity, setQuantity] = useState(1)
   const countryCode = useCountryCode()
+  const [showNotification, setShowNotification] = useState(false)
 
   const { mutateAsync, isPending } = useAddLineItem()
 
@@ -183,6 +424,8 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
       quantity,
       countryCode,
     })
+
+    setShowNotification(true)
   }
 
   const hasMultipleVariants = (product.variants?.length ?? 0) > 1
@@ -215,6 +458,15 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
       ? materials.find((m) => m.name === options[materialOption.id])
       : undefined
 
+  useEffect(() => {
+    const sizeOption = productOptions.find((option) => option.title === "Size")
+    const firstSizeValue = sizeOption?.values?.find((value) => Boolean(value.value))
+
+    if (sizeOption && firstSizeValue && !options[sizeOption.id]) {
+      setOptionValue(sizeOption.id, firstSizeValue.value)
+    }
+  }, [options, productOptions])
+
   const showOtherOptions =
     !materialOption ||
     !colorOption ||
@@ -223,6 +475,15 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
 
   return (
     <>
+      {showNotification && (
+        <CartNotification
+          productTitle={product.title ?? ""}
+          productThumbnail={product.thumbnail}
+          countryCode={countryCode ?? ""}
+          onDismiss={() => setShowNotification(false)}
+        />
+      )}
+
       <ProductPrice product={product} variant={selectedVariant} />
       <div className="max-md:text-xs mb-6 max-w-120">
         <p>{product.description}</p>
@@ -331,6 +592,44 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
           )}
           {showOtherOptions &&
             otherOptions.map((option) => {
+              const isSizeOption = option.title === "Size"
+
+              if (isSizeOption) {
+                const sizeValues = (option.values ?? []).filter((value) =>
+                  Boolean(value.value)
+                )
+
+                return (
+                  <div key={option.id}>
+
+                    <div className="flex flex-wrap gap-3">
+                      {sizeValues.map((value) => {
+                        const isSelected = options[option.id] === value.value
+
+                        return (
+                          <button
+                            key={value.id}
+                            type="button"
+                            onClick={() => setOptionValue(option.id, value.value)}
+                            disabled={!!disabled || isPending}
+                            aria-pressed={isSelected}
+                            aria-label={`${option.title} ${value.value}`}
+                            className={
+                              `min-w-20 h-14 rounded-2xl border px-6 text-base font-medium transition-colors ` +
+                              (isSelected
+                                ? "border-black bg-black text-white"
+                                : "border-grayscale-200 bg-white text-black hover:border-black")
+                            }
+                          >
+                            {value.value}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              }
+
               return (
                 <div key={option.id}>
                   <p className="mb-4">
@@ -375,7 +674,7 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
             })}
         </div>
       )}
-      <div className="flex max-sm:flex-col gap-4">
+      <div className="flex items-stretch gap-4">
         <InputNumberField
           isDisabled={
             !itemsInStock || !selectedVariant || !!disabled || isPending
@@ -384,14 +683,14 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
           onChange={setQuantity}
           minValue={1}
           maxValue={itemsInStock}
-          className="w-full sm:w-35 max-md:justify-center max-md:gap-2"
+          className="w-35 shrink-0 max-md:justify-center max-md:gap-2"
           aria-label="Quantity"
         />
         <Button
           onPress={handleAddToCart}
           isDisabled={!itemsInStock || !selectedVariant || !!disabled}
           isLoading={isPending}
-          className="sm:flex-1"
+          className="flex-1 min-w-0"
         >
           {!selectedVariant
             ? "Select variant"

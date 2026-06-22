@@ -23,8 +23,8 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
         {product.categories && product.categories.length > 0 && (
           <div className="flex flex-wrap items-center gap-x-2">
             {product.categories.map((c, i) => (
-              <span key={c.id} className="flex items-center gap-x-2">
-                {i > 0 && <span>,</span>}
+              <span key={c.id ?? c.handle} className="flex items-center gap-x-2">
+                {i > 0 && <span aria-hidden="true">,</span>}
                 <LocalizedLink
                   href={`/categories/${c.handle}`}
                   className="hover:text-black transition-colors"
