@@ -28,7 +28,7 @@ const CartTotals: React.FC<CartTotalsProps> = ({
   } = cart
 
   const displaySubtotal = (subtotal ?? 0) - (shipping_total ?? 0)
-  const displayShipping = shipping_total ? convertToLocale({ amount: shipping_total ?? 0, currency_code }) : "Calculated at checkout";
+  const displayShipping = shipping_total ? convertToLocale({ amount: shipping_total ?? 0, currency_code }) : convertToLocale({ amount: 300, currency_code });
 
   return (
     <div className={className}>

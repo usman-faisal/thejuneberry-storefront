@@ -58,8 +58,8 @@ export const CartDrawer = withReactQueryProvider(() => {
 
     const subtotalVal = (cart.subtotal ?? 0) - (cart.shipping_total ?? 0)
     const subtotalStr = formatPrice(subtotalVal)
-    const deliveryStr = "Rs. 200"
-    const totalVal = subtotalVal + 200
+    const deliveryStr = "Rs. 300"
+    const totalVal = subtotalVal + 300
     const totalStr = formatPrice(totalVal)
 
     const message = `Hi! I'd like to order:
