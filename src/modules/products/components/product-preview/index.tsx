@@ -33,7 +33,7 @@ export default function ProductPreview({
         <Thumbnail
           thumbnail={product.thumbnail}
           images={product.images}
-          size="square"
+          size="3/4"
           className="mb-4 md:mb-6"
         />
         {isSale && (
