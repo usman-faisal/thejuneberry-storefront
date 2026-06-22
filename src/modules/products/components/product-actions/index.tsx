@@ -624,7 +624,7 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
                             aria-pressed={isSelected}
                             aria-label={`${option.title} ${value.value}`}
                             className={
-                              `min-w-20 h-14 rounded-2xl border px-6 text-base font-medium transition-colors ` +
+                              `min-w-12 h-10 rounded-2xl border px-6 text-base font-medium transition-colors ` +
                               (isSelected
                                 ? "border-black bg-black text-white"
                                 : "border-grayscale-200 bg-white text-black hover:border-black")
