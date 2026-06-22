@@ -7,9 +7,11 @@ import { LocalizedLink } from "@/components/LocalizedLink"
 import ProductsGrid from "@modules/products/components/products-grid"
 
 export const metadata: Metadata = {
-  title: "The Juneberry",
+  title: {
+    absolute: "The Juneberry | Premium Pakistani Women's Clothing",
+  },
   description:
-    "Premium Pakistani women's clothing — lawn, taftan, chiffon and more",
+    "Discover premium Pakistani women's clothing at The Juneberry. Shop the latest lawn, chiffon, and luxury cotton collections.",
 }
 
 const PAGE_SIZE = 9
@@ -37,6 +39,7 @@ export default async function Home({
 
   return (
     <>
+      <h1 className="sr-only">The Juneberry | Premium Pakistani Women&apos;s Clothing</h1>
       {/* Hero — slightly reduced height */}
       <div className="relative max-md:pt-18 w-full">
         <Image

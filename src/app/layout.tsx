@@ -9,6 +9,38 @@ import { WebMCPProvider } from "@lib/webmcp/WebMCPProvider"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
+  title: {
+    default: "The Juneberry | Premium Pakistani Women's Clothing",
+    template: "%s | The Juneberry",
+  },
+  description: "Premium Pakistani women's clothing — lawn, chiffon, luxury cotton collections with nationwide delivery.",
+  openGraph: {
+    title: {
+      default: "The Juneberry | Premium Pakistani Women's Clothing",
+      template: "%s | The Juneberry",
+    },
+    description: "Premium Pakistani women's clothing — lawn, chiffon, luxury cotton collections with nationwide delivery.",
+    siteName: "The Juneberry",
+    images: [
+      {
+        url: "/images/content/juneberry_hero.png",
+        width: 1200,
+        height: 630,
+        alt: "The Juneberry",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: {
+      default: "The Juneberry | Premium Pakistani Women's Clothing",
+      template: "%s | The Juneberry",
+    },
+    description: "Premium Pakistani women's clothing — lawn, chiffon, luxury cotton collections.",
+    images: ["/images/content/juneberry_hero.png"],
+  },
 }
 
 const monaSans = Mona_Sans({

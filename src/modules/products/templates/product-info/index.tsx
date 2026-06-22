@@ -36,7 +36,7 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
           </div>
         )}
       </div>
-      <h2 className="text-md md:text-xl mb-2">{product.title}</h2>
+      <h1 className="text-md md:text-xl mb-2">{product.title}</h1>
     </>
   )
 }

@@ -44,7 +44,7 @@ export const Header: React.FC = async () => {
         <Layout>
           <LayoutColumn>
             <div className="flex justify-between items-center h-18 md:h-21">
-              <h1 className="font-medium text-md flex items-center">
+              <div className="font-medium text-md flex items-center">
                 <LocalizedLink href="/" className="block">
                   <Image
                     src="/images/content/logo.jpg"
@@ -55,7 +55,7 @@ export const Header: React.FC = async () => {
                     priority
                   />
                 </LocalizedLink>
-              </h1>
+              </div>
               <div className="flex items-center gap-8 max-md:hidden">
                 <LocalizedLink href="/store">Shop</LocalizedLink>
                 {collections.map((collection) => (

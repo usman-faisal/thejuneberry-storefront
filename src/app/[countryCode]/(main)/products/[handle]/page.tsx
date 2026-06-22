@@ -67,12 +67,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     notFound()
   }
 
+  const title = product.title
+  const desc = product.description || `Shop ${product.title} at The Juneberry — premium Pakistani women's clothing.`
+
   return {
-    title: `${product.title} | Medusa Store`,
-    description: `${product.title}`,
+    title,
+    description: desc,
     openGraph: {
-      title: `${product.title} | Medusa Store`,
-      description: `${product.title}`,
+      title,
+      description: desc,
       images: product.thumbnail ? [product.thumbnail] : [],
     },
   }

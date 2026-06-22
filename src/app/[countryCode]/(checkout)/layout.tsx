@@ -26,7 +26,7 @@ export default function CheckoutLayout({
               The Juneberry
             </LocalizedLink>
             <div>
-              <p className="font-semibold">Checkout</p>
+              <h1 className="font-semibold">Checkout</h1>
             </div>
           </div>
         </LayoutColumn>

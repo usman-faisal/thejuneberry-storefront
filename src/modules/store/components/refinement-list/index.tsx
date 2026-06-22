@@ -11,7 +11,6 @@ import { MobileSort } from "@modules/store/components/refinement-list/mobile-sor
 import SortProducts, {
   SortOptions,
 } from "@modules/store/components/refinement-list/sort-products"
-import { TypeFilter } from "@modules/store/components/refinement-list/type-filter"
 
 type RefinementListProps = {
   title?: string
@@ -77,9 +76,9 @@ const RefinementList = ({
   return (
     <Layout className="mb-6 md:mb-8">
       <LayoutColumn>
-        <h2 className="text-md md:text-2xl mb-6 md:mb-7" id="products">
+        <h1 className="text-md md:text-2xl mb-6 md:mb-7" id="products">
           {title}
-        </h2>
+        </h1>
         <div className="flex justify-between gap-10">
           <MobileFilters
             collections={collections}

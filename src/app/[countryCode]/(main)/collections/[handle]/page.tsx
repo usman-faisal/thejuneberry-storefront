@@ -69,12 +69,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     collection.metadata ?? {}
   )
 
+  const title = collection.title
+  const desc =
+    collectionDetails.success && collectionDetails.data.description
+      ? collectionDetails.data.description
+      : `Explore the ${collection.title} collection of premium Pakistani women's clothing at The Juneberry.`
+
   const metadata = {
-    title: `${collection.title} | Medusa Store`,
-    description:
-      collectionDetails.success && collectionDetails.data.description
-        ? collectionDetails.data.description
-        : `${collection.title} collection`,
+    title,
+    description: desc,
+    openGraph: {
+      title,
+      description: desc,
+    },
   } as Metadata
 
   return metadata
