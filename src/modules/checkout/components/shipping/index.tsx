@@ -12,11 +12,13 @@ import {
   UiRadioGroup,
   UiRadioLabel,
 } from "@/components/ui/Radio"
-import { useCartShippingMethods, useSetShippingMethod, useInitiatePaymentSession } from "hooks/cart"
+import { useCartShippingMethods, useSetShippingMethod } from "hooks/cart"
 import { StoreCart } from "@medusajs/types"
+import { initiatePaymentSession } from "@lib/data/cart"
 
 const Shipping = ({ cart }: { cart: StoreCart }) => {
   const [error, setError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -29,40 +31,38 @@ const Shipping = ({ cart }: { cart: StoreCart }) => {
     (method) => !method.name.toLowerCase().includes("international")
   )
 
-  const { mutate, isPending } = useSetShippingMethod({ cartId: cart.id })
-  const initiatePaymentSession = useInitiatePaymentSession()
+  const { mutate: setShippingMethodMutate, isPending: isSettingShipping } =
+    useSetShippingMethod({ cartId: cart.id })
+
   const selectedShippingMethod = availableShippingMethods?.find(
     (method) => method.id === cart.shipping_methods?.[0]?.shipping_option_id
   )
 
-  const handleSubmit = () => {
-    // Commented out redirection to payment step
-    // router.push(pathname + "?step=payment", { scroll: false })
+  const handleSubmit = async () => {
+    setError(null)
+    setIsSubmitting(true)
 
-    // Auto-initiate payment session with COD (pp_system_default) and redirect to review step
-    const activeSession = cart?.payment_collection?.payment_sessions?.find(
-      (s) => s.status === "pending"
-    )
-
-    if (activeSession?.provider_id === "pp_system_default") {
-      router.push(pathname + "?step=review", { scroll: false })
-    } else {
-      initiatePaymentSession.mutate(
-        { providerId: "pp_system_default" },
-        {
-          onSuccess: () => {
-            router.push(pathname + "?step=review", { scroll: false })
-          },
-          onError: (err) => {
-            setError(err instanceof Error ? err.message : `${err}`)
-          },
-        }
+    try {
+      // Initiate COD payment session if not already active
+      const activeSession = cart?.payment_collection?.payment_sessions?.find(
+        (s) => s.status === "pending"
       )
+
+      if (activeSession?.provider_id !== "pp_system_default") {
+        await initiatePaymentSession("pp_system_default")
+      }
+
+      // Navigate to review
+      router.push(pathname + "?step=review", { scroll: false })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : `${err}`)
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
   const set = (id: string) => {
-    mutate(
+    setShippingMethodMutate(
       { shippingMethodId: id },
       { onError: (err) => setError(err.message) }
     )
@@ -71,15 +71,6 @@ const Shipping = ({ cart }: { cart: StoreCart }) => {
   useEffect(() => {
     setError(null)
   }, [isOpen])
-
-  useEffect(() => {
-    if (isOpen && availableShippingMethods && availableShippingMethods.length > 0 && (!cart.shipping_methods || cart.shipping_methods.length === 0)) {
-      const defaultMethod = availableShippingMethods.find(m => m.name.toLowerCase().includes("standard")) || availableShippingMethods[0]
-      if (defaultMethod) {
-        set(defaultMethod.id)
-      }
-    }
-  }, [isOpen, availableShippingMethods, cart.shipping_methods])
 
   return (
     <>
@@ -146,8 +137,8 @@ const Shipping = ({ cart }: { cart: StoreCart }) => {
 
             <Button
               onPress={handleSubmit}
-              isLoading={isPending || initiatePaymentSession.isPending}
-              isDisabled={!cart.shipping_methods?.[0]}
+              isLoading={isSubmitting || isSettingShipping}
+              isDisabled={!selectedShippingMethod}
             >
               Next
             </Button>
