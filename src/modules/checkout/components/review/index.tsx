@@ -1,10 +1,12 @@
 "use client"
 
+import { useEffect, useRef } from "react"
 import { twJoin } from "tailwind-merge"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 import { Button } from "@/components/Button"
 import PaymentButton from "@modules/checkout/components/payment-button"
+import { useInitiatePaymentSession } from "hooks/cart"
 import { StoreCart } from "@medusajs/types"
 
 const Review = ({ cart }: { cart: StoreCart }) => {
@@ -17,6 +19,17 @@ const Review = ({ cart }: { cart: StoreCart }) => {
   const hasDefaultSession = cart?.payment_collection?.payment_sessions?.some(
     (s) => s.provider_id === "pp_system_default"
   )
+
+  const initiatePaymentSession = useInitiatePaymentSession()
+  // Ref guard prevents infinite re-triggering — fires at most once per mount
+  const hasInitiated = useRef(false)
+
+  useEffect(() => {
+    if (isOpen && !hasDefaultSession && !hasInitiated.current && !initiatePaymentSession.isPending) {
+      hasInitiated.current = true
+      initiatePaymentSession.mutate({ providerId: "pp_system_default" })
+    }
+  }, [isOpen, hasDefaultSession]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const previousStepsCompleted =
     cart.shipping_address &&
@@ -57,9 +70,9 @@ const Review = ({ cart }: { cart: StoreCart }) => {
             We will prepare your premium fabric and nationwide delivery will arrive within 3-5 working days.
             Thank you for shopping with The Juneberry!
           </p>
-          {!hasDefaultSession ? (
+          {!hasDefaultSession || initiatePaymentSession.isPending ? (
             <Button className="w-full" isDisabled isLoading>
-              Loading review...
+              Preparing order...
             </Button>
           ) : (
             <PaymentButton

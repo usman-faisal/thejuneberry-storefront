@@ -14,11 +14,11 @@ import {
 } from "@/components/ui/Radio"
 import { useCartShippingMethods, useSetShippingMethod } from "hooks/cart"
 import { StoreCart } from "@medusajs/types"
-import { initiatePaymentSession } from "@lib/data/cart"
+
 
 const Shipping = ({ cart }: { cart: StoreCart }) => {
   const [error, setError] = useState<string | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+
 
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -38,27 +38,9 @@ const Shipping = ({ cart }: { cart: StoreCart }) => {
     (method) => method.id === cart.shipping_methods?.[0]?.shipping_option_id
   )
 
-  const handleSubmit = async () => {
-    setError(null)
-    setIsSubmitting(true)
-
-    try {
-      // Initiate COD payment session if not already active
-      const activeSession = cart?.payment_collection?.payment_sessions?.find(
-        (s) => s.status === "pending"
-      )
-
-      if (activeSession?.provider_id !== "pp_system_default") {
-        await initiatePaymentSession("pp_system_default")
-      }
-
-      // Navigate to review
-      router.push(pathname + "?step=review", { scroll: false })
-    } catch (err) {
-      setError(err instanceof Error ? err.message : `${err}`)
-    } finally {
-      setIsSubmitting(false)
-    }
+  const handleSubmit = () => {
+    // Navigate to review — review step handles payment session initiation
+    router.push(pathname + "?step=review", { scroll: false })
   }
 
   const set = (id: string) => {
@@ -137,7 +119,7 @@ const Shipping = ({ cart }: { cart: StoreCart }) => {
 
             <Button
               onPress={handleSubmit}
-              isLoading={isSubmitting || isSettingShipping}
+              isLoading={isSettingShipping}
               isDisabled={!selectedShippingMethod}
             >
               Next
