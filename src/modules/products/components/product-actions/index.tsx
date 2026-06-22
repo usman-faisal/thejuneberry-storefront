@@ -249,7 +249,7 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
                   <img
                     src="/images/content/size_chart.png"
                     alt="Size Chart"
-                    className="max-w-[200px] h-auto block mx-auto object-contain"
+                    className="max-w-[900px] w-full h-auto block mx-auto object-contain"
                   />
                 </div>
               </UiDialog>
