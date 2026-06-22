@@ -315,6 +315,13 @@ const ShippingAddress = ({
       ) : (
         <div className="grid grid-cols-2 gap-4 mb-8">
           <InputField
+            placeholder="Email (optional)"
+            name="email"
+            className="col-span-2"
+            inputProps={{ autoComplete: "email" }}
+            data-testid="shipping-email-input"
+          />
+          <InputField
             placeholder="First name"
             name="shipping_address.first_name"
             inputProps={{ autoComplete: "given-name" }}
@@ -329,20 +336,9 @@ const ShippingAddress = ({
           <InputField
             placeholder="Address"
             name="shipping_address.address_1"
+            className="col-span-2"
             inputProps={{ autoComplete: "address-line1" }}
             data-testid="shipping-address-input"
-          />
-          <InputField
-            placeholder="Company"
-            name="shipping_address.company"
-            inputProps={{ autoComplete: "organization" }}
-            data-testid="shipping-company-input"
-          />
-          <InputField
-            placeholder="Postal code"
-            name="shipping_address.postal_code"
-            inputProps={{ autoComplete: "postal-code" }}
-            data-testid="shipping-postal-code-input"
           />
           <InputField
             placeholder="City"
@@ -368,7 +364,7 @@ const ShippingAddress = ({
             data-testid="shipping-country-select"
           />
           <InputField
-            placeholder="State / Province"
+            placeholder="State / Province (optional)"
             name="shipping_address.province"
             inputProps={{ autoComplete: "address-level1" }}
             data-testid="shipping-province-input"
@@ -376,6 +372,7 @@ const ShippingAddress = ({
           <InputField
             placeholder="Phone"
             name="shipping_address.phone"
+            type="number"
             inputProps={{ autoComplete: "tel" }}
             data-testid="shipping-phone-input"
           />

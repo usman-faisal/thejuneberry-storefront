@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     "Premium Pakistani women's clothing — lawn, taftan, chiffon and more",
 }
 
-const PAGE_SIZE = 8
+const PAGE_SIZE = 9
 
 export default async function Home({
   params,

@@ -49,15 +49,13 @@ const Review = ({ cart }: { cart: StoreCart }) => {
               isOpen && "font-semibold"
             )}
           >
-            {/* 5. Review */}
-            4. Review
+            3. Review
           </p>
         </div>
         {!isOpen &&
           previousStepsCompleted &&
           cart?.shipping_address &&
-          cart?.billing_address &&
-          cart?.email && (
+          cart?.billing_address && (
             <Button
               variant="link"
               onPress={() => {
@@ -71,10 +69,9 @@ const Review = ({ cart }: { cart: StoreCart }) => {
       {isOpen && previousStepsCompleted && (
         <>
           <p className="mb-8">
-            By clicking the Place Order button, you confirm that you have read,
-            understand and accept our Terms of Use, Terms of Sale and Returns
-            Policy and acknowledge that you have read Medusa Store&apos;s
-            Privacy Policy.
+            By clicking the Place Order button, you confirm your order with Cash on Delivery (COD).
+            We will prepare your premium fabric and nationwide delivery will arrive within 3-5 working days.
+            Thank you for shopping with The Juneberry!
           </p>
           {!hasDefaultSession || initiatePaymentSession.isPending ? (
             <Button className="w-full" isDisabled isLoading>

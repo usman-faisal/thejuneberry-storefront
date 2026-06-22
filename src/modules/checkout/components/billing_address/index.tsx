@@ -321,26 +321,11 @@ const BillingAddress = ({
           <InputField
             placeholder="Address"
             name="billing_address.address_1"
+            className="col-span-2"
             inputProps={{
               autoComplete: "address-line1",
             }}
             data-testid="billing-address-input"
-          />
-          <InputField
-            placeholder="Company"
-            name="billing_address.company"
-            inputProps={{
-              autoComplete: "company",
-            }}
-            data-testid="billing-company-input"
-          />
-          <InputField
-            placeholder="Postal code"
-            name="billing_address.postal_code"
-            inputProps={{
-              autoComplete: "postal-code",
-            }}
-            data-testid="billing-postal-input"
           />
           <InputField
             placeholder="City"
@@ -367,7 +352,7 @@ const BillingAddress = ({
             data-testid="billing-country-select"
           />
           <InputField
-            placeholder="State / Province"
+            placeholder="State / Province (optional)"
             name="billing_address.province"
             inputProps={{ autoComplete: "address-level1" }}
             data-testid="billing-province-input"
@@ -375,6 +360,7 @@ const BillingAddress = ({
           <InputField
             placeholder="Phone"
             name="billing_address.phone"
+            type="number"
             inputProps={{ autoComplete: "tel" }}
             data-testid="billing-phone-input"
           />

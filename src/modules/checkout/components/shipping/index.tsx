@@ -72,6 +72,15 @@ const Shipping = ({ cart }: { cart: StoreCart }) => {
     setError(null)
   }, [isOpen])
 
+  useEffect(() => {
+    if (isOpen && availableShippingMethods && availableShippingMethods.length > 0 && (!cart.shipping_methods || cart.shipping_methods.length === 0)) {
+      const defaultMethod = availableShippingMethods.find(m => m.name.toLowerCase().includes("standard")) || availableShippingMethods[0]
+      if (defaultMethod) {
+        set(defaultMethod.id)
+      }
+    }
+  }, [isOpen, availableShippingMethods, cart.shipping_methods])
+
   return (
     <>
       <div className="flex justify-between mb-6 md:mb-8 border-t border-grayscale-200 pt-8 mt-8">
@@ -82,13 +91,12 @@ const Shipping = ({ cart }: { cart: StoreCart }) => {
               isOpen && "font-semibold"
             )}
           >
-            3. Shipping
+            2. Shipping
           </p>
         </div>
         {!isOpen &&
           cart?.shipping_address &&
-          cart?.billing_address &&
-          cart?.email && (
+          cart?.billing_address && (
             <Button
               variant="link"
               onPress={() => {

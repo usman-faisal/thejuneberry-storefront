@@ -418,6 +418,7 @@ export const useSetShippingMethod = (
 
 export const addressesFormSchema = z
   .object({
+    email: z.string().email("Enter a valid email address.").optional().or(z.literal("")),
     shipping_address: z.object({
       first_name: z.string().min(1),
       last_name: z.string().min(1),
@@ -425,10 +426,10 @@ export const addressesFormSchema = z
       address_1: z.string().min(1),
       address_2: z.string().optional(),
       city: z.string().min(1),
-      postal_code: z.string().min(1),
+      postal_code: z.string().optional(),
       province: z.string().optional(),
       country_code: z.string().min(2),
-      phone: z.string().optional(),
+      phone: z.string().min(1, "Phone number is required"),
     }),
   })
   .and(
@@ -445,10 +446,10 @@ export const addressesFormSchema = z
           address_1: z.string().min(1),
           address_2: z.string().optional(),
           city: z.string().min(1),
-          postal_code: z.string().min(1),
+          postal_code: z.string().optional(),
           province: z.string().optional(),
           country_code: z.string().min(2),
-          phone: z.string().optional(),
+          phone: z.string().min(1, "Phone number is required"),
         }),
       }),
     ])

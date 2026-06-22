@@ -20,6 +20,9 @@ import ProductPrice from "@modules/products/components/product-price"
 import { UiRadioGroup } from "@/components/ui/Radio"
 import { withReactQueryProvider } from "@lib/util/react-query"
 import { useAddLineItem } from "hooks/cart"
+import { UiDialogTrigger, UiDialog, UiCloseButton } from "@/components/Dialog"
+import { UiModalOverlay, UiModal } from "@/components/ui/Modal"
+import { Icon } from "@/components/Icon"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -221,11 +224,41 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
   return (
     <>
       <ProductPrice product={product} variant={selectedVariant} />
-      <div className="max-md:text-xs mb-8 md:mb-16 max-w-120">
+      <div className="max-md:text-xs mb-6 max-w-120">
         <p>{product.description}</p>
       </div>
+      <div className="mb-8 md:mb-12">
+        <UiDialogTrigger>
+          <Button variant="unstyled" className="group inline-flex items-center gap-2 border border-grayscale-200 hover:border-black transition-colors px-4 py-2 text-xs tracking-widest uppercase font-medium text-grayscale-600 hover:text-black rounded-none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 6H3"/><path d="M10 12H3"/><path d="M10 18H3"/><circle cx="17" cy="15" r="3"/><path d="m21 19-1.9-1.9"/></svg>
+            Size Chart
+          </Button>
+          <UiModalOverlay>
+            <UiModal className="max-w-2xl w-full p-0 overflow-y-auto">
+              <UiDialog className="flex flex-col">
+                {/* Header */}
+                <div className="flex justify-between items-center px-6 py-4 border-b border-grayscale-100">
+                  <h3 className="text-sm font-semibold tracking-widest uppercase">Size Guide</h3>
+                  <UiCloseButton variant="ghost" className="p-1 hover:bg-grayscale-50 rounded-sm">
+                    <Icon name="close" className="w-5 h-5" />
+                  </UiCloseButton>
+                </div>
+                {/* Chart Image */}
+                <div className="p-6 flex justify-center items-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/images/content/size_chart.png"
+                    alt="Size Chart"
+                    className="max-w-[200px] h-auto block mx-auto object-contain"
+                  />
+                </div>
+              </UiDialog>
+            </UiModal>
+          </UiModalOverlay>
+        </UiDialogTrigger>
+      </div>
       {hasMultipleVariants && (
-        <div className="flex flex-col gap-8 md:gap-6 mb-4 md:mb-26">
+        <div className="flex flex-col gap-8 md:gap-6 mb-4 md:mb-12">
           {materialOption && colorOption && (
             <>
               <div>

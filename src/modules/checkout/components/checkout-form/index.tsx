@@ -4,10 +4,8 @@ import React from "react"
 import { useRouter } from "next/navigation"
 
 import Wrapper from "@modules/checkout/components/payment-wrapper"
-import Email from "@modules/checkout/components/email"
 import Addresses from "@modules/checkout/components/addresses"
 import Shipping from "@modules/checkout/components/shipping"
-import Payment from "@modules/checkout/components/payment"
 import Review from "@modules/checkout/components/review"
 import { useCart } from "hooks/cart"
 import { getCheckoutStep } from "@modules/cart/utils/getCheckoutStep"
@@ -40,7 +38,6 @@ export const CheckoutForm = withReactQueryProvider<{
 
   return (
     <Wrapper cart={cart}>
-      <Email countryCode={countryCode} cart={cart} />
       <Addresses cart={cart} />
       <Shipping cart={cart} />
       {/* <Payment cart={cart} /> */}

@@ -8,14 +8,34 @@ type ProductInfoProps = {
 const ProductInfo = ({ product }: ProductInfoProps) => {
   return (
     <>
-      {product.collection && (
-        <LocalizedLink
-          href={`/collections/${product.collection.handle}`}
-          className="text-medium text-fg-muted dark:text-fg-muted-dark hover:text-fg-subtle dark:hover:text-fg-subtle-dark"
-        >
-          <p className="text-grayscale-500 mb-2">{product.collection.title}</p>
-        </LocalizedLink>
-      )}
+      <div className="flex flex-wrap items-center gap-x-2 text-grayscale-500 mb-2 text-xs md:text-sm">
+        {product.collection && (
+          <LocalizedLink
+            href={`/collections/${product.collection.handle}`}
+            className="hover:text-black transition-colors"
+          >
+            <span>{product.collection.title}</span>
+          </LocalizedLink>
+        )}
+        {product.collection && product.categories && product.categories.length > 0 && (
+          <span>•</span>
+        )}
+        {product.categories && product.categories.length > 0 && (
+          <div className="flex flex-wrap items-center gap-x-2">
+            {product.categories.map((c, i) => (
+              <span key={c.id} className="flex items-center gap-x-2">
+                {i > 0 && <span>,</span>}
+                <LocalizedLink
+                  href={`/categories/${c.handle}`}
+                  className="hover:text-black transition-colors"
+                >
+                  <span>{c.name}</span>
+                </LocalizedLink>
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
       <h2 className="text-md md:text-xl mb-2">{product.title}</h2>
     </>
   )

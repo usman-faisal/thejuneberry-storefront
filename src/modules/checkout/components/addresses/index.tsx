@@ -17,6 +17,7 @@ import { StoreCart } from "@medusajs/types"
 
 const addressesFormSchema = z
   .object({
+    email: z.string().email("Enter a valid email address.").optional().or(z.literal("")),
     shipping_address: z.object({
       first_name: z.string().min(1),
       last_name: z.string().min(1),
@@ -24,10 +25,10 @@ const addressesFormSchema = z
       address_1: z.string().min(1),
       address_2: z.string().optional(),
       city: z.string().min(1),
-      postal_code: z.string().min(1),
+      postal_code: z.string().optional(),
       province: z.string().optional(),
       country_code: z.string().min(2),
-      phone: z.string().optional(),
+      phone: z.string().min(1, "Phone number is required"),
     }),
   })
   .and(
@@ -44,10 +45,10 @@ const addressesFormSchema = z
           address_1: z.string().min(1),
           address_2: z.string().optional(),
           city: z.string().min(1),
-          postal_code: z.string().min(1),
+          postal_code: z.string().optional(),
           province: z.string().optional(),
           country_code: z.string().min(2),
-          phone: z.string().optional(),
+          phone: z.string().min(1, "Phone number is required"),
         }),
       }),
     ])
@@ -93,7 +94,7 @@ const Addresses = ({ cart }: { cart: StoreCart }) => {
 
   return (
     <>
-      <div className="flex justify-between mb-6 md:mb-8 border-t border-grayscale-200 pt-8 mt-8">
+      <div className="flex justify-between mb-6 md:mb-8">
         <div>
           <p
             className={twJoin(
@@ -101,7 +102,7 @@ const Addresses = ({ cart }: { cart: StoreCart }) => {
               isOpen && "font-semibold"
             )}
           >
-            2. Delivery details
+            1. Delivery details
           </p>
         </div>
         {!isOpen && cart?.shipping_address && (
@@ -125,6 +126,7 @@ const Addresses = ({ cart }: { cart: StoreCart }) => {
           defaultValues={
             sameAsBilling
               ? {
+                  email: cart?.email && !cart.email.startsWith("guest_") ? cart.email : "",
                   shipping_address: cart?.shipping_address || {
                     first_name: "",
                     last_name: "",
@@ -140,6 +142,7 @@ const Addresses = ({ cart }: { cart: StoreCart }) => {
                   same_as_billing: "on",
                 }
               : {
+                  email: cart?.email && !cart.email.startsWith("guest_") ? cart.email : "",
                   shipping_address: cart?.shipping_address || {
                     first_name: "",
                     last_name: "",

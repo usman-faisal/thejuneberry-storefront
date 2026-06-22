@@ -363,12 +363,31 @@ export async function setAddresses(
       throw new Error("No existing cart found when setting addresses")
     }
 
+    const email = formData.email && formData.email.trim()
+      ? formData.email
+      : `guest_${Date.now()}@thejuneberry.com`
+
+    const shipping_postal_code = formData.shipping_address.postal_code || "00000"
+    const billing_postal_code = formData.same_as_billing === "on"
+      ? shipping_postal_code
+      : (formData.billing_address?.postal_code || "00000")
+
     await updateCart({
-      shipping_address: formData.shipping_address,
+      email,
+      shipping_address: {
+        ...formData.shipping_address,
+        postal_code: shipping_postal_code,
+      },
       billing_address:
         formData.same_as_billing === "on"
-          ? formData.shipping_address
-          : formData.billing_address,
+          ? {
+              ...formData.shipping_address,
+              postal_code: shipping_postal_code,
+            }
+          : {
+              ...formData.billing_address,
+              postal_code: billing_postal_code,
+            },
     })
     revalidateTag("shipping")
     return { success: true, error: null }

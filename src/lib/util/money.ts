@@ -11,8 +11,8 @@ type ConvertToLocaleParams = {
 export const convertToLocale = ({
   amount,
   currency_code,
-  minimumFractionDigits,
-  maximumFractionDigits,
+  minimumFractionDigits = 0,
+  maximumFractionDigits = 0,
   locale = "en-US",
 }: ConvertToLocaleParams) => {
   return currency_code && !isEmpty(currency_code)
