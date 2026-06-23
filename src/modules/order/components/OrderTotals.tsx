@@ -81,10 +81,10 @@ export const OrderTotals: React.FC<{
           </p>
         </div>
       </div>
-      <p className="text-xs text-grayscale-500">
+      {/* <p className="text-xs text-grayscale-500">
         Including {convertToLocale({ amount: tax_total ?? 0, currency_code })}{" "}
         tax
-      </p>
+      </p> */}
     </div>
   )
 }
