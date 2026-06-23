@@ -89,6 +89,19 @@ async function getCountryCode(
  * Middleware to handle region selection and onboarding status.
  */
 export async function middleware(request: NextRequest) {
+  const seoPaths = new Set([
+    "/robots.txt",
+    "/sitemap.xml",
+    "/manifest.webmanifest",
+    "/site.webmanifest",
+    "/browserconfig.xml",
+    "/ads.txt",
+  ])
+
+  if (seoPaths.has(request.nextUrl.pathname)) {
+    return NextResponse.next()
+  }
+
   const regionMap = await getRegionMap()
   const countryCode = regionMap && (await getCountryCode(request, regionMap))
 
