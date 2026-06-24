@@ -6,6 +6,7 @@ import { getBaseURL } from "@lib/util/env"
 import "../styles/globals.css"
 import React from "react"
 import { WebMCPProvider } from "@lib/webmcp/WebMCPProvider"
+import FacebookPixel from "./pixel"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
@@ -59,6 +60,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
   return (
     <html lang="en" data-mode="light" className="antialiased">
       <body className={`${monaSans.className}`}>
+        <FacebookPixel />
         <main className="relative">{props.children}</main>
         <SpeedInsights />
         <WebMCPProvider />

@@ -6,6 +6,7 @@ import Item from "@modules/order/components/item"
 import { OrderTotals } from "@modules/order/components/OrderTotals"
 import { listOrders } from "@lib/data/orders"
 import { getCustomer } from "@lib/data/customer"
+import PurchasePixelTracker from "@modules/order/components/PurchasePixelTracker"
 
 const WHATSAPP_NUMBER = "923313365411"
 
@@ -68,7 +69,9 @@ Total: Rs. ${totalPrice}
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`
 
   return (
-    <Layout className="py-26 md:pt-39 md:pb-36">
+    <>
+      <PurchasePixelTracker order={order} />
+      <Layout className="py-26 md:pt-39 md:pb-36">
       <LayoutColumn
         start={{ base: 1, lg: 3, xl: 4 }}
         end={{ base: 13, lg: 11, xl: 10 }}
@@ -187,5 +190,6 @@ Total: Rs. ${totalPrice}
         </div>
       </LayoutColumn>
     </Layout>
+    </>
   )
 }

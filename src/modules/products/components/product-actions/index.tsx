@@ -334,8 +334,30 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
   const countryCode = useCountryCode()
   const [showNotification, setShowNotification] = useState(false)
   const [whatsAppError, setWhatsAppError] = useState<string | null>(null)
+  const viewContentFired = useRef(false)
 
   const { mutateAsync, isPending } = useAddLineItem()
+
+  // Track ViewContent once when the product page loads
+  useEffect(() => {
+    if (viewContentFired.current) return
+    if (typeof window === "undefined" || !window.fbq) return
+    if (!product) return
+
+    viewContentFired.current = true
+
+    const { cheapestPrice } = getProductPrice({ product })
+    const lowestVariantPrice = cheapestPrice?.calculated_price_number ?? 0
+
+    window.fbq("track", "ViewContent", {
+      value: lowestVariantPrice / 100,
+      currency: "PKR",
+      content_ids: [product.id],
+      content_type: "product",
+      content_name: product.title,
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product.id])
 
   // If there is only 1 variant, preselect the options
   useEffect(() => {
@@ -444,6 +466,17 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
         : `Rs. ${variantPrice.calculated_price_number}`)
       : ""
 
+    // Track Lead event on WhatsApp order click
+    if (typeof window !== "undefined" && window.fbq) {
+      const variantPriceNumber = variantPrice?.calculated_price_number ?? 0
+      window.fbq("track", "Lead", {
+        value: variantPriceNumber / 100,
+        currency: "PKR",
+        content_ids: [selectedVariant.id],
+        content_type: "product",
+      })
+    }
+
     const message = `Hi! I'd like to order:
 
 Product: ${product.title}
@@ -470,6 +503,22 @@ Please confirm availability.`
       quantity,
       countryCode,
     })
+
+    // Track AddToCart event
+    if (typeof window !== "undefined" && window.fbq) {
+      const { variantPrice } = getProductPrice({
+        product,
+        variantId: selectedVariant.id,
+      })
+      const variantPriceNumber = variantPrice?.calculated_price_number ?? 0
+      window.fbq("track", "AddToCart", {
+        value: variantPriceNumber / 100,
+        currency: "PKR",
+        content_ids: [selectedVariant.id],
+        content_type: "product",
+        content_name: product.title,
+      })
+    }
 
     setShowNotification(true)
   }

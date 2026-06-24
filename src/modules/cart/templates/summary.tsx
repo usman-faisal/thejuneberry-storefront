@@ -70,6 +70,18 @@ Total: ${totalStr}
 Please confirm and share delivery details.`
 
     const encodedMessage = encodeURIComponent(message)
+
+    // Track Lead event on WhatsApp order click
+    if (typeof window !== "undefined" && window.fbq) {
+      const cartTotal = (cart.subtotal ?? 0)
+      window.fbq("track", "Lead", {
+        value: cartTotal / 100,
+        currency: "PKR",
+        content_ids: (cart.items ?? []).map((i) => i.variant_id).filter(Boolean),
+        content_type: "product",
+      })
+    }
+
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`, "_blank")
   }
 
