@@ -57,7 +57,7 @@ export const Header: React.FC = async () => {
                 </LocalizedLink>
               </div>
               <div className="flex items-center gap-8 max-md:hidden">
-                <LocalizedLink href="/store">Shop</LocalizedLink>
+                <LocalizedLink href="/">Shop</LocalizedLink>
                 {collections.map((collection) => (
                   <LocalizedLink
                     key={collection.id}
