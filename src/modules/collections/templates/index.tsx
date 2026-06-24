@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import { HttpTypes } from "@medusajs/types"
-import Image from "next/image"
+// import Image from "next/image" // hero image removed
 
 import { collectionMetadataCustomFieldsSchema } from "@lib/util/collections"
 import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-grid"
@@ -40,8 +40,9 @@ export default async function CollectionTemplate({
   ])
 
   return (
-    <>
-      <div className="max-md:mt-18 relative aspect-[2/1] md:h-screen w-full max-w-full mb-8 md:mb-19">
+    <div className="md:pt-26 py-20 md:pb-36">
+      {/* Hero image removed for cleaner experience */}
+      {/* <div className="max-md:mt-18 relative aspect-[2/1] md:h-screen w-full max-w-full mb-8 md:mb-19">
         <Image
           src={
             collectionDetails.data?.collection_page_image?.url ||
@@ -51,8 +52,9 @@ export default async function CollectionTemplate({
           alt={collection.title + " image"}
           className="object-cover z-0"
         />
-      </div>
-      {collectionDetails.success &&
+      </div> */}
+      {/* Collection description block removed for cleaner experience */}
+      {/* {collectionDetails.success &&
         ((typeof collectionDetails.data.collection_page_heading === "string" &&
           collectionDetails.data.collection_page_heading.length > 0) ||
           (typeof collectionDetails.data.collection_page_content === "string" &&
@@ -80,7 +82,7 @@ export default async function CollectionTemplate({
               </LayoutColumn>
             )}
           </Layout>
-        )}
+        )} */}
       <RefinementList
         sortBy={sortBy}
         title={collection.title}
@@ -117,7 +119,6 @@ export default async function CollectionTemplate({
           />
         )}
       </Suspense>
-      <div className="pb-10 md:pb-20" />
-    </>
+    </div>
   )
 }

@@ -12,12 +12,15 @@ export const HeaderWrapper: React.FC<{ children?: React.ReactNode }> = ({
   const currentPath = countryCode
     ? pathName.split(`/${countryCode}`)[1]
     : pathName
-  const isPageWithHeroImage =
+  // Hero images removed site-wide — header is always solid/sticky
+  const isPageWithHeroImage = false
+  const isAlwaysSticky =
     !currentPath ||
     currentPath === "/" ||
-    currentPath.startsWith("/collections")
-  const isAlwaysSticky =
-    currentPath.startsWith("/auth") || currentPath.startsWith("/account")
+    currentPath.startsWith("/auth") ||
+    currentPath.startsWith("/account") ||
+    currentPath.startsWith("/collections") ||
+    currentPath.startsWith("/store")
 
   React.useEffect(() => {
     if (isAlwaysSticky) {
@@ -83,9 +86,9 @@ export const HeaderWrapper: React.FC<{ children?: React.ReactNode }> = ({
   return (
     <div
       id="site-header"
-      className="top-0 left-0 w-full max-md:bg-grayscale-50 data-[light=true]:md:text-white data-[sticky=true]:md:bg-white data-[sticky=true]:md:text-black transition-colors fixed z-40 group"
-      data-light={isPageWithHeroImage}
-      data-sticky={isAlwaysSticky}
+      className="top-0 left-0 w-full bg-white text-black shadow-sm transition-colors fixed z-40 group"
+      data-light={false}
+      data-sticky={true}
     >
       {children}
     </div>

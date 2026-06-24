@@ -76,48 +76,54 @@ const RefinementList = ({
   return (
     <Layout className="mb-6 md:mb-8">
       <LayoutColumn>
-        <h1 className="text-md md:text-2xl mb-6 md:mb-7" id="products">
-          {title}
-        </h1>
-        <div className="flex justify-between gap-10">
-          <MobileFilters
-            collections={collections}
-            collection={collection}
-            categories={categories}
-            category={category}
-            types={types}
-            type={type}
-            setMultipleQueryParams={setMultipleQueryParams}
-          />
-          <MobileSort sortBy={sortBy} setQueryParams={setQueryParams} />
-          <div className="flex justify-between gap-4 max-md:hidden">
-            {typeof collections !== "undefined" && (
-              <CollectionFilter
-                collections={collections}
-                collection={collection}
-                setQueryParams={setQueryParams}
-              />
-            )}
-            {typeof categories !== "undefined" && (
-              <CategoryFilter
-                categories={categories}
-                category={category}
-                setQueryParams={setQueryParams}
-              />
-            )}
-            {/*{typeof types !== "undefined" && (
-              <TypeFilter
-                types={types}
-                type={type}
-                setQueryParams={setQueryParams}
-              />
-            )}*/}
+        <div className="flex justify-between items-center gap-4 py-4 border-b border-grayscale-200">
+          {title && title !== "Shop" ? (
+            <h1 className="text-sm md:text-base font-medium tracking-widest uppercase text-grayscale-700" id="products">
+              {title}
+            </h1>
+          ) : (
+            <span className="text-sm font-medium tracking-widest uppercase text-grayscale-500">All Products</span>
+          )}
+          <div className="flex items-center gap-3 ml-auto">
+            <MobileFilters
+              collections={collections}
+              collection={collection}
+              categories={categories}
+              category={category}
+              types={types}
+              type={type}
+              setMultipleQueryParams={setMultipleQueryParams}
+            />
+            <MobileSort sortBy={sortBy} setQueryParams={setQueryParams} />
+            <div className="flex items-center gap-3 max-md:hidden">
+              {typeof collections !== "undefined" && (
+                <CollectionFilter
+                  collections={collections}
+                  collection={collection}
+                  setQueryParams={setQueryParams}
+                />
+              )}
+              {typeof categories !== "undefined" && (
+                <CategoryFilter
+                  categories={categories}
+                  category={category}
+                  setQueryParams={setQueryParams}
+                />
+              )}
+              {/*{typeof types !== "undefined" && (
+                <TypeFilter
+                  types={types}
+                  type={type}
+                  setQueryParams={setQueryParams}
+                />
+              )}*/}
+            </div>
+            <SortProducts
+              sortBy={sortBy}
+              setQueryParams={setQueryParams}
+              data-testid={dataTestId}
+            />
           </div>
-          <SortProducts
-            sortBy={sortBy}
-            setQueryParams={setQueryParams}
-            data-testid={dataTestId}
-          />
         </div>
       </LayoutColumn>
     </Layout>

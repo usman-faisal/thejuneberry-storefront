@@ -36,7 +36,7 @@ const StoreTemplate = async ({
   ])
 
   return (
-    <div className="md:pt-47 py-26 md:pb-36">
+    <div className="md:pt-26 py-20 md:pb-36">
       <RefinementList
         collections={Object.fromEntries(
           collections.collections.map((c) => [c.handle, c.title])
