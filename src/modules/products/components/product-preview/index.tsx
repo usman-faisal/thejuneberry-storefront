@@ -28,6 +28,10 @@ export default function ProductPreview({
 
   const isSale = hasReducedPrice || hasCompareAtPrice
   const isSoldOut = isProductSoldOut(product)
+  const badgeLabel =
+    typeof product.metadata?.badge_label === "string"
+      ? product.metadata.badge_label
+      : null
 
   return (
     <LocalizedLink href={`/products/${product.handle}`}>
@@ -41,6 +45,10 @@ export default function ProductPreview({
         {isSoldOut ? (
           <span className="absolute top-2 left-2 z-10 bg-white text-black border border-grayscale-200 text-[10px] tracking-widest uppercase font-medium px-2 py-0.5 rounded-sm">
             Sold out
+          </span>
+        ) : badgeLabel ? (
+          <span className="absolute top-2 left-2 z-10 bg-black text-white text-[10px] tracking-widest uppercase font-medium px-2 py-0.5 rounded-sm">
+            {badgeLabel}
           </span>
         ) : isSale ? (
           <span className="absolute top-2 left-2 z-10 bg-black text-white text-[10px] tracking-widest uppercase font-medium px-2 py-0.5 rounded-sm">

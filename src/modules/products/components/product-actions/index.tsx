@@ -434,7 +434,9 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
     })
   }, [product.variants, options])
 
-  const getMatchingVariant = (selectedOptions: Record<string, string>) => {
+  const getMatchingVariant = (
+    selectedOptions: Record<string, string | undefined>
+  ) => {
     return product.variants?.find((variant) => {
       const variantOptions = optionsAsKeymap(variant.options)
       return isEqual(variantOptions, selectedOptions)

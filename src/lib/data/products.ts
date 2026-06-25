@@ -92,7 +92,7 @@ export const getProductsList = async function ({
           limit,
           offset,
           region_id: region.id,
-          fields: "*variants.calculated_price,+variants.inventory_quantity",
+          fields: "*variants.calculated_price,+variants.inventory_quantity,+metadata",
           ...queryParams,
         } satisfies HttpTypes.StoreProductListParams,
         next: { tags: ["products"] },
