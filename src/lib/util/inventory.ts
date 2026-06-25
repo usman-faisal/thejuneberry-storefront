@@ -19,3 +19,22 @@ export function getVariantItemsInStock(variant: HttpTypes.StoreProductVariant) {
   // Otherwise, return 0
   return 0
 }
+
+export function getProductItemsInStock(product: HttpTypes.StoreProduct) {
+  const variants = product.variants ?? []
+  const hasUnlimitedStock = variants.some(
+    (variant) => getVariantItemsInStock(variant) === Number.MAX_SAFE_INTEGER
+  )
+
+  if (hasUnlimitedStock) {
+    return Number.MAX_SAFE_INTEGER
+  }
+
+  return variants.reduce((total, variant) => {
+    return total + getVariantItemsInStock(variant)
+  }, 0)
+}
+
+export function isProductSoldOut(product: HttpTypes.StoreProduct) {
+  return getProductItemsInStock(product) === 0
+}

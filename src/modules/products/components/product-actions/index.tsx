@@ -4,7 +4,10 @@ import { isEqual } from "lodash"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { HttpTypes } from "@medusajs/types"
 import * as ReactAria from "react-aria-components"
-import { getVariantItemsInStock } from "@lib/util/inventory"
+import {
+  getProductItemsInStock,
+  getVariantItemsInStock,
+} from "@lib/util/inventory"
 import { Button } from "@/components/Button"
 import { InputNumberField } from "@/components/InputNumberField"
 import {
@@ -431,6 +434,22 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
     })
   }, [product.variants, options])
 
+  const getMatchingVariant = (selectedOptions: Record<string, string>) => {
+    return product.variants?.find((variant) => {
+      const variantOptions = optionsAsKeymap(variant.options)
+      return isEqual(variantOptions, selectedOptions)
+    })
+  }
+
+  const isOptionValueSoldOut = (optionId: string, value: string) => {
+    const variant = getMatchingVariant({
+      ...options,
+      [optionId]: value,
+    })
+
+    return variant ? getVariantItemsInStock(variant) === 0 : false
+  }
+
   // update the options when a variant is selected
   const setOptionValue = (optionId: string, value: string) => {
     setOptions((prev) => ({
@@ -493,6 +512,8 @@ Please confirm availability.`
   const itemsInStock = selectedVariant
     ? getVariantItemsInStock(selectedVariant)
     : 0
+  const productItemsInStock = getProductItemsInStock(product)
+  const isSoldOut = productItemsInStock === 0
 
   // add the selected variant to the cart
   const handleAddToCart = async () => {
@@ -586,6 +607,11 @@ Please confirm availability.`
       )}
 
       <ProductPrice product={product} variant={selectedVariant} />
+      {isSoldOut && (
+        <p className="mb-6 max-w-120 text-sm font-medium text-red-primary">
+          This product is currently sold out.
+        </p>
+      )}
       <div className="max-md:text-xs mb-6 max-w-120">
         <p>{product.description}</p>
       </div>
@@ -708,18 +734,26 @@ Please confirm availability.`
                     <div className="flex flex-wrap gap-3">
                       {sizeValues.map((value) => {
                         const isSelected = options[option.id] === value.value
+                        const isValueSoldOut = isOptionValueSoldOut(
+                          option.id,
+                          value.value
+                        )
 
                         return (
                           <button
                             key={value.id}
                             type="button"
                             onClick={() => setOptionValue(option.id, value.value)}
-                            disabled={!!disabled || isPending}
+                            disabled={!!disabled || isPending || isValueSoldOut}
                             aria-pressed={isSelected}
-                            aria-label={`${option.title} ${value.value}`}
+                            aria-label={`${option.title} ${value.value}${
+                              isValueSoldOut ? " sold out" : ""
+                            }`}
                             className={
                               `min-w-12 h-10 rounded-2xl border px-6 text-base font-medium transition-colors ` +
-                              (isSelected
+                              (isValueSoldOut
+                                ? "border-grayscale-200 bg-grayscale-50 text-grayscale-400 line-through cursor-not-allowed"
+                                : isSelected
                                 ? "border-black bg-black text-white"
                                 : "border-grayscale-200 bg-white text-black hover:border-black")
                             }

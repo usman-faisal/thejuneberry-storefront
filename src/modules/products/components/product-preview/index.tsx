@@ -2,6 +2,7 @@ import { HttpTypes } from "@medusajs/types"
 import { LocalizedLink } from "@/components/LocalizedLink"
 import Thumbnail from "@modules/products/components/thumbnail"
 import { getProductPrice } from "@lib/util/get-product-price"
+import { isProductSoldOut } from "@lib/util/inventory"
 
 export default function ProductPreview({
   product,
@@ -26,6 +27,7 @@ export default function ProductPreview({
       (cheapestPrice?.original_price_number || 0)
 
   const isSale = hasReducedPrice || hasCompareAtPrice
+  const isSoldOut = isProductSoldOut(product)
 
   return (
     <LocalizedLink href={`/products/${product.handle}`}>
@@ -36,11 +38,15 @@ export default function ProductPreview({
           size="3/4"
           className="mb-4 md:mb-6"
         />
-        {isSale && (
+        {isSoldOut ? (
+          <span className="absolute top-2 left-2 z-10 bg-white text-black border border-grayscale-200 text-[10px] tracking-widest uppercase font-medium px-2 py-0.5 rounded-sm">
+            Sold out
+          </span>
+        ) : isSale ? (
           <span className="absolute top-2 left-2 z-10 bg-black text-white text-[10px] tracking-widest uppercase font-medium px-2 py-0.5 rounded-sm">
             Sale
           </span>
-        )}
+        ) : null}
       </div>
       <div className="flex justify-between max-md:flex-col">
         <div className="max-md:text-xs">

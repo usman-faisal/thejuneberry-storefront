@@ -92,7 +92,7 @@ export const getProductsList = async function ({
           limit,
           offset,
           region_id: region.id,
-          fields: "*variants.calculated_price",
+          fields: "*variants.calculated_price,+variants.inventory_quantity",
           ...queryParams,
         } satisfies HttpTypes.StoreProductListParams,
         next: { tags: ["products"] },
@@ -182,4 +182,3 @@ export const searchProducts = async function ({
     })
     .then(({ products }) => products)
 }
-
