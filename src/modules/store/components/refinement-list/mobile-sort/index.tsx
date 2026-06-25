@@ -22,7 +22,7 @@ export const MobileSort: React.FC<{
         variant="outline"
         iconName="chevron-down"
         iconPosition="end"
-        className="md:hidden border-grayscale-200"
+        className="md:hidden min-w-[5.75rem] whitespace-nowrap border-grayscale-200"
       >
         Sort by
       </Button>
