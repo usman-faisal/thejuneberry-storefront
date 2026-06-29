@@ -58,7 +58,7 @@ export default function ProductPreview({
       </div>
       <div className="flex justify-between max-md:flex-col">
         <div className="max-md:text-xs">
-          <p className="mb-1">{product.title}</p>
+          <p className="mb-1 line-clamp-2 leading-snug">{product.title}</p>
           {product.collection && (
             <p className="text-grayscale-500 text-xs max-md:hidden">
               {product.collection.title}

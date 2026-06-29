@@ -65,12 +65,12 @@ const CheckoutSummary = ({ cart }: { cart: HttpTypes.StoreCart }) => {
                   className="w-25 lg:w-33"
                 />
               </LocalizedLink>
-              <div className="flex flex-col flex-1 justify-between">
+              <div className="min-w-0 flex flex-col flex-1 justify-between">
                 <div className="flex flex-wrap gap-x-4 gap-y-1 justify-between">
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <LocalizedLink
                       href={`/products/${item.variant?.product?.handle}`}
-                      className="font-semibold"
+                      className="line-clamp-2 font-semibold leading-snug"
                     >
                       {item.product_title}
                     </LocalizedLink>
