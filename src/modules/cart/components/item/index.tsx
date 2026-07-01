@@ -10,7 +10,10 @@ import { LocalizedLink } from "@/components/LocalizedLink"
 import { twMerge } from "tailwind-merge"
 import { useLineItemQuantityUpdater } from "hooks/cart"
 import { withReactQueryProvider } from "@lib/util/react-query"
-import { getLineItemSelectedOptions } from "@lib/util/line-item-options"
+import {
+  getLineItemSelectedImageUrl,
+  getLineItemSelectedOptions,
+} from "@lib/util/line-item-options"
 
 type ItemProps = {
   item: HttpTypes.StoreCartLineItem
@@ -32,6 +35,7 @@ const Item = ({ item, className }: ItemProps) => {
   })
   const maxQuantity = item.variant ? getVariantItemsInStock(item.variant) : 0
   const selectedOptions = getLineItemSelectedOptions(item)
+  const selectedImageUrl = getLineItemSelectedImageUrl(item)
 
   return (
     <div
@@ -43,7 +47,7 @@ const Item = ({ item, className }: ItemProps) => {
       <div className="flex gap-6">
         <LocalizedLink href={`/products/${handle}`}>
           <Thumbnail
-            thumbnail={item.variant?.product?.thumbnail}
+            thumbnail={selectedImageUrl ?? item.variant?.product?.thumbnail}
             images={item.variant?.product?.images}
             size="3/4"
             className="w-25 sm:w-30"

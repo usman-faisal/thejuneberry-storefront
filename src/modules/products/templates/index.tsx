@@ -4,10 +4,8 @@ import { HttpTypes } from "@medusajs/types"
 import Image from "next/image"
 
 import { collectionMetadataCustomFieldsSchema } from "@lib/util/collections"
-import ImageGallery from "@modules/products/components/image-gallery"
-import ProductActions from "@modules/products/components/product-actions"
 import RelatedProducts from "@modules/products/components/related-products"
-import ProductInfo from "@modules/products/templates/product-info"
+import ProductGalleryActions from "@modules/products/templates/product-gallery-actions"
 import SkeletonRelatedProducts from "@modules/skeletons/templates/skeleton-related-products"
 import { LocalizedLink } from "@/components/LocalizedLink"
 import { Layout, LayoutColumn } from "@/components/Layout"
@@ -52,27 +50,15 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
       className="pt-18 md:pt-26 lg:pt-37 pb-26 md:pb-36"
       data-testid="product-container"
     >
-      <ImageGallery className="md:hidden" images={images} />
       <Layout>
         <LayoutColumn className="mb-26 md:mb-52">
-          <div className="flex max-lg:flex-col gap-8 xl:gap-27">
-            {hasImages && (
-              <div className="lg:w-1/2 flex flex-1 flex-col gap-8">
-                <ImageGallery className="max-md:hidden" images={images} />
-              </div>
-            )}
-            <div className="sticky flex-1 top-0">
-              <ProductInfo product={product} />
-              <Suspense>
-                <ProductActions
-                  product={product}
-                  materials={materials}
-                  region={region}
-                />
-              </Suspense>
-            </div>
-            {!hasImages && <div className="flex-1" />}
-          </div>
+          <ProductGalleryActions
+            product={product}
+            materials={materials}
+            region={region}
+            hasImages={hasImages}
+            images={images}
+          />
         </LayoutColumn>
       </Layout>
       {collectionDetails.success &&

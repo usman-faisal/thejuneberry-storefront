@@ -5,17 +5,24 @@ import Image from "next/image"
 type ImageGalleryProps = {
   images: HttpTypes.StoreProductImage[]
   className?: string
+  selectedImageUrl?: string
 }
 
-const ImageGallery = ({ images, className }: ImageGalleryProps) => {
+const ImageGallery = ({ images, className, selectedImageUrl }: ImageGalleryProps) => {
   const filteredImages = images.filter((image) => Boolean(image.url))
+  const selectedIndex = selectedImageUrl
+    ? filteredImages.findIndex((image) => image.url === selectedImageUrl)
+    : undefined
 
   if (!filteredImages.length) {
     return null
   }
 
   return (
-    <ProductPageGallery className={className}>
+    <ProductPageGallery
+      className={className}
+      selectedIndex={selectedIndex !== undefined && selectedIndex > -1 ? selectedIndex : undefined}
+    >
       {filteredImages.map((image, index) => (
         <div
           key={image.id}

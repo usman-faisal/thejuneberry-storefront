@@ -10,8 +10,8 @@ import { Icon } from "@/components/Icon"
 import { IconCircle } from "@/components/IconCircle"
 
 export const ProductPageGallery: React.FC<
-  React.ComponentPropsWithRef<"div">
-> = ({ children, className }) => {
+  React.ComponentPropsWithRef<"div"> & { selectedIndex?: number }
+> = ({ children, className, selectedIndex: controlledSelectedIndex }) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     containScroll: "trimSnaps",
     skipSnaps: true,
@@ -54,6 +54,12 @@ export const ProductPageGallery: React.FC<
     onSelect(emblaApi)
     emblaApi.on("reInit", onInit).on("reInit", onSelect).on("select", onSelect)
   }, [emblaApi, onInit, onSelect])
+
+  React.useEffect(() => {
+    if (!emblaApi || controlledSelectedIndex === undefined) return
+
+    emblaApi.scrollTo(controlledSelectedIndex)
+  }, [controlledSelectedIndex, emblaApi])
 
   return (
     <div className={twMerge("overflow-hidden relative", className)}>

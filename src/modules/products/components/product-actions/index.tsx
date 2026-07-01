@@ -43,6 +43,8 @@ type ProductActionsProps = {
   }[]
   region: HttpTypes.StoreRegion
   disabled?: boolean
+  selectedOptionImageUrl?: string
+  onSelectedColorChange?: (color?: string) => void
 }
 
 const optionsAsKeymap = (
@@ -348,7 +350,13 @@ function CartNotification({
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-function ProductActions({ product, materials, disabled }: ProductActionsProps) {
+function ProductActions({
+  product,
+  materials,
+  disabled,
+  selectedOptionImageUrl,
+  onSelectedColorChange,
+}: ProductActionsProps) {
   const searchParams = useSearchParams()
   const [options, setOptions] = useState<Record<string, string | undefined>>(
     getInitialOptions(product) ?? {}
@@ -555,7 +563,10 @@ Please confirm availability.`
       quantity,
       countryCode,
       metadata: selectedLineItemOptions.length
-        ? { selected_options: selectedLineItemOptions }
+        ? {
+            selected_options: selectedLineItemOptions,
+            selected_image_url: selectedOptionImageUrl,
+          }
         : undefined,
     })
 
@@ -615,6 +626,10 @@ Please confirm availability.`
     materialOption && options[materialOption.id]
       ? materials.find((m) => m.name === options[materialOption.id])
       : undefined
+
+  useEffect(() => {
+    onSelectedColorChange?.(colorOption ? options[colorOption.id] : undefined)
+  }, [colorOption, onSelectedColorChange, options])
 
   useEffect(() => {
     const defaultOptions = productOptions.reduce(

@@ -32,3 +32,9 @@ export const getLineItemSelectedOptions = (
 export const formatLineItemSelectedOptions = (
   options: SelectedLineItemOption[]
 ) => options.map((option) => `${option.title}: ${option.value}`).join(", ")
+
+export const getLineItemSelectedImageUrl = (item: LineItemWithMetadata) => {
+  const selectedImageUrl = item.metadata?.selected_image_url
+
+  return typeof selectedImageUrl === "string" ? selectedImageUrl : undefined
+}

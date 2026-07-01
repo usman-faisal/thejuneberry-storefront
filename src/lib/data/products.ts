@@ -35,7 +35,8 @@ export const getProductByHandle = async function (
       query: {
         handle,
         region_id: regionId,
-        fields: "*variants.calculated_price,+variants.inventory_quantity,+categories.name,+categories.handle",
+        fields:
+          "*variants.calculated_price,+variants.inventory_quantity,+categories.name,+categories.handle,+images.metadata",
       } satisfies HttpTypes.StoreProductListParams,
       next: { tags: ["products"] },
     })

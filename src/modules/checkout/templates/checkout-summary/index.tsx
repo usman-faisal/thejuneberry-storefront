@@ -4,7 +4,10 @@ import { getPricesForVariant } from "@lib/util/get-product-price"
 import CartTotals from "@modules/common/components/cart-totals"
 import Thumbnail from "@modules/products/components/thumbnail"
 import { LocalizedButtonLink, LocalizedLink } from "@/components/LocalizedLink"
-import { getLineItemSelectedOptions } from "@lib/util/line-item-options"
+import {
+  getLineItemSelectedImageUrl,
+  getLineItemSelectedOptions,
+} from "@lib/util/line-item-options"
 
 const ItemPrice: React.FC<{
   item: HttpTypes.StoreCartLineItem | HttpTypes.StoreOrderLineItem
@@ -55,6 +58,7 @@ const CheckoutSummary = ({ cart }: { cart: HttpTypes.StoreCart }) => {
           })
           .map((item) => {
             const selectedOptions = getLineItemSelectedOptions(item)
+            const selectedImageUrl = getLineItemSelectedImageUrl(item)
 
             return (
               <div key={item.id} className="flex gap-4 lg:gap-6 mb-8">
@@ -62,7 +66,7 @@ const CheckoutSummary = ({ cart }: { cart: HttpTypes.StoreCart }) => {
                   href={`/products/${item.variant?.product?.handle}`}
                 >
                   <Thumbnail
-                    thumbnail={item.variant?.product?.thumbnail}
+                    thumbnail={selectedImageUrl ?? item.variant?.product?.thumbnail}
                     images={item.variant?.product?.images}
                     size="3/4"
                     className="w-25 lg:w-33"
