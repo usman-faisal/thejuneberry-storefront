@@ -8,7 +8,11 @@ type ImageGalleryProps = {
   selectedImageUrl?: string
 }
 
-const ImageGallery = ({ images, className, selectedImageUrl }: ImageGalleryProps) => {
+const ImageGallery = ({
+  images,
+  className,
+  selectedImageUrl,
+}: ImageGalleryProps) => {
   const filteredImages = images.filter((image) => Boolean(image.url))
   const selectedIndex = selectedImageUrl
     ? filteredImages.findIndex((image) => image.url === selectedImageUrl)
@@ -21,7 +25,16 @@ const ImageGallery = ({ images, className, selectedImageUrl }: ImageGalleryProps
   return (
     <ProductPageGallery
       className={className}
-      selectedIndex={selectedIndex !== undefined && selectedIndex > -1 ? selectedIndex : undefined}
+      selectedIndex={
+        selectedIndex !== undefined && selectedIndex > -1
+          ? selectedIndex
+          : undefined
+      }
+      thumbnails={filteredImages.map((image, index) => ({
+        id: image.id,
+        url: image.url,
+        alt: `Product thumbnail ${index + 1}`,
+      }))}
     >
       {filteredImages.map((image, index) => (
         <div
