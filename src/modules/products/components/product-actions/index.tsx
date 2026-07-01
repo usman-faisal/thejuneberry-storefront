@@ -1,6 +1,5 @@
 "use client"
 
-import { isEqual } from "lodash"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { HttpTypes } from "@medusajs/types"
 import * as ReactAria from "react-aria-components"
@@ -27,6 +26,7 @@ import { UiDialogTrigger, UiDialog, UiCloseButton } from "@/components/Dialog"
 import { UiModalOverlay, UiModal } from "@/components/ui/Modal"
 import { Icon } from "@/components/Icon"
 import { useRouter, useSearchParams } from "next/navigation"
+import type { SelectedLineItemOption } from "@lib/util/line-item-options"
 
 const WHATSAPP_NUMBER = "923313365411"
 
@@ -86,6 +86,26 @@ const getInitialOptions = (product: ProductActionsProps["product"]) => {
   }
 
   return null
+}
+
+const getSelectedLineItemOptions = (
+  productOptions: NonNullable<ProductActionsProps["product"]["options"]>,
+  selectedOptions: Record<string, string | undefined>
+): SelectedLineItemOption[] => {
+  return productOptions
+    .map((option) => {
+      const value = selectedOptions[option.id]
+
+      if (!option.title || !value) {
+        return null
+      }
+
+      return {
+        title: option.title,
+        value,
+      }
+    })
+    .filter((option): option is SelectedLineItemOption => Boolean(option))
 }
 
 // ─── Cart Notification ───────────────────────────────────────────────────────
@@ -430,7 +450,9 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
 
     return product.variants.find((v) => {
       const variantOptions = optionsAsKeymap(v.options)
-      return isEqual(variantOptions, options)
+      return Object.entries(variantOptions ?? {}).every(
+        ([optionId, value]) => options[optionId] === value
+      )
     })
   }, [product.variants, options])
 
@@ -439,7 +461,9 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
   ) => {
     return product.variants?.find((variant) => {
       const variantOptions = optionsAsKeymap(variant.options)
-      return isEqual(variantOptions, selectedOptions)
+      return Object.entries(variantOptions ?? {}).every(
+        ([optionId, value]) => selectedOptions[optionId] === value
+      )
     })
   }
 
@@ -486,6 +510,11 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
         ? variantPrice.calculated_price
         : `Rs. ${variantPrice.calculated_price_number}`)
       : ""
+    const selectedOptionsText = selectedLineItemOptions.length
+      ? `\n${selectedLineItemOptions
+        .map((option) => `${option.title}: ${option.value}`)
+        .join("\n")}`
+      : ""
 
     // Track Lead event on WhatsApp order click
     if (typeof window !== "undefined" && window.fbq) {
@@ -501,7 +530,7 @@ function ProductActions({ product, materials, disabled }: ProductActionsProps) {
     const message = `Hi! I'd like to order:
 
 Product: ${product.title}
-Size: ${selectedSize || "N/A"}
+Options:${selectedOptionsText || "\nN/A"}
 Price: ${priceString}
 
 Please confirm availability.`
@@ -525,6 +554,9 @@ Please confirm availability.`
       variantId: selectedVariant.id,
       quantity,
       countryCode,
+      metadata: selectedLineItemOptions.length
+        ? { selected_options: selectedLineItemOptions }
+        : undefined,
     })
 
     // Track AddToCart event
@@ -561,6 +593,10 @@ Please confirm availability.`
 
     return aPriority - bPriority
   })
+  const selectedLineItemOptions = getSelectedLineItemOptions(
+    productOptions,
+    options
+  )
 
   const materialOption = productOptions.find(
     (o) => normalizeOptionTitle(o.title) === "material"
@@ -581,15 +617,50 @@ Please confirm availability.`
       : undefined
 
   useEffect(() => {
-    const sizeOption = productOptions.find(
-      (option) => normalizeOptionTitle(option.title) === "size"
-    )
-    const firstSizeValue = sizeOption?.values?.find((value) => Boolean(value.value))
+    const defaultOptions = productOptions.reduce(
+      (acc, option) => {
+        let defaultValue: string | undefined
 
-    if (sizeOption && firstSizeValue && !options[sizeOption.id]) {
-      setOptionValue(sizeOption.id, firstSizeValue.value)
+        if (materialOption && option.id === materialOption.id) {
+          defaultValue =
+            materials[0]?.name ??
+            option.values?.find((value) => Boolean(value.value))?.value
+        } else if (colorOption && option.id === colorOption.id) {
+          defaultValue =
+            selectedMaterial?.colors[0]?.name ??
+            option.values?.find((value) => Boolean(value.value))?.value
+        } else {
+          defaultValue = option.values?.find((value) =>
+            Boolean(value.value)
+          )?.value
+        }
+
+        if (defaultValue) {
+          acc[option.id] = defaultValue
+        }
+
+        return acc
+      },
+      {} as Record<string, string>
+    )
+
+    if (!Object.keys(defaultOptions).length) {
+      return
     }
-  }, [options, productOptions])
+
+    setOptions((prev) => {
+      let next = prev
+
+      Object.entries(defaultOptions).forEach(([optionId, value]) => {
+        if (!next[optionId]) {
+          next = next === prev ? { ...prev } : next
+          next[optionId] = value
+        }
+      })
+
+      return next
+    })
+  }, [colorOption, materialOption, materials, productOptions, selectedMaterial])
 
   const showOtherOptions =
     !materialOption ||
@@ -721,53 +792,9 @@ Please confirm availability.`
           )}
           {showOtherOptions &&
             otherOptions.map((option) => {
-              const isSizeOption = normalizeOptionTitle(option.title) === "size"
-
-              if (isSizeOption) {
-                const sizeValues = (option.values ?? []).filter((value) =>
-                  Boolean(value.value)
-                )
-
-                return (
-                  <div key={option.id}>
-                    <p className="mb-4">
-                      {option.title}
-                    </p>
-                    <div className="flex flex-wrap gap-3">
-                      {sizeValues.map((value) => {
-                        const isSelected = options[option.id] === value.value
-                        const isValueSoldOut = isOptionValueSoldOut(
-                          option.id,
-                          value.value
-                        )
-
-                        return (
-                          <button
-                            key={value.id}
-                            type="button"
-                            onClick={() => setOptionValue(option.id, value.value)}
-                            disabled={!!disabled || isPending || isValueSoldOut}
-                            aria-pressed={isSelected}
-                            aria-label={`${option.title} ${value.value}${
-                              isValueSoldOut ? " sold out" : ""
-                            }`}
-                            className={
-                              `min-w-12 h-10 rounded-2xl border px-6 text-base font-medium transition-colors ` +
-                              (isValueSoldOut
-                                ? "border-grayscale-200 bg-grayscale-50 text-grayscale-400 line-through cursor-not-allowed"
-                                : isSelected
-                                ? "border-black bg-black text-white"
-                                : "border-grayscale-200 bg-white text-black hover:border-black")
-                            }
-                          >
-                            {value.value}
-                          </button>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )
-              }
+              const optionValues = (option.values ?? []).filter((value) =>
+                Boolean(value.value)
+              )
 
               return (
                 <div key={option.id}>
@@ -779,35 +806,38 @@ Please confirm availability.`
                       </span>
                     )}
                   </p>
-                  <ReactAria.Select
-                    selectedKey={options[option.id] ?? null}
-                    onSelectionChange={(value) => {
-                      setOptionValue(option.id, `${value}`)
-                    }}
-                    placeholder={`Choose ${option.title.toLowerCase()}`}
-                    className="w-full md:w-60"
-                    isDisabled={!!disabled || isPending}
-                    aria-label={option.title}
-                  >
-                    <UiSelectButton className="!h-12 px-4 gap-2 max-md:text-base">
-                      <UiSelectValue />
-                      <UiSelectIcon className="h-6 w-6" />
-                    </UiSelectButton>
-                    <ReactAria.Popover className="w-[--trigger-width]">
-                      <UiSelectListBox>
-                        {(option.values ?? [])
-                          .filter((value) => Boolean(value.value))
-                          .map((value) => (
-                            <UiSelectListBoxItem
-                              key={value.id}
-                              id={value.value}
-                            >
-                              {value.value}
-                            </UiSelectListBoxItem>
-                          ))}
-                      </UiSelectListBox>
-                    </ReactAria.Popover>
-                  </ReactAria.Select>
+                  <div className="flex flex-wrap gap-3">
+                    {optionValues.map((value) => {
+                      const isSelected = options[option.id] === value.value
+                      const isValueSoldOut = isOptionValueSoldOut(
+                        option.id,
+                        value.value
+                      )
+
+                      return (
+                        <button
+                          key={value.id}
+                          type="button"
+                          onClick={() => setOptionValue(option.id, value.value)}
+                          disabled={!!disabled || isPending || isValueSoldOut}
+                          aria-pressed={isSelected}
+                          aria-label={`${option.title} ${value.value}${
+                            isValueSoldOut ? " sold out" : ""
+                          }`}
+                          className={
+                            `min-w-12 h-10 rounded-2xl border px-6 text-base font-medium transition-colors ` +
+                            (isValueSoldOut
+                              ? "border-grayscale-200 bg-grayscale-50 text-grayscale-400 line-through cursor-not-allowed"
+                              : isSelected
+                              ? "border-black bg-black text-white"
+                              : "border-grayscale-200 bg-white text-black hover:border-black")
+                          }
+                        >
+                          {value.value}
+                        </button>
+                      )
+                    })}
+                  </div>
                 </div>
               )
             })}

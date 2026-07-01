@@ -10,6 +10,7 @@ import { LocalizedLink } from "@/components/LocalizedLink"
 import { twMerge } from "tailwind-merge"
 import { useLineItemQuantityUpdater } from "hooks/cart"
 import { withReactQueryProvider } from "@lib/util/react-query"
+import { getLineItemSelectedOptions } from "@lib/util/line-item-options"
 
 type ItemProps = {
   item: HttpTypes.StoreCartLineItem
@@ -30,6 +31,7 @@ const Item = ({ item, className }: ItemProps) => {
     initialQuantity: item.quantity,
   })
   const maxQuantity = item.variant ? getVariantItemsInStock(item.variant) : 0
+  const selectedOptions = getLineItemSelectedOptions(item)
 
   return (
     <div
@@ -54,9 +56,19 @@ const Item = ({ item, className }: ItemProps) => {
                 {item.product_title}
               </LocalizedLink>
             </h2>
-            <p className="text-grayscale-500 text-xs sm:text-base max-sm:mb-4">
-              {item.variant?.title}
-            </p>
+            {selectedOptions.length ? (
+              <div className="text-grayscale-500 text-xs sm:text-base max-sm:mb-4">
+                {selectedOptions.map((option) => (
+                  <p key={`${option.title}-${option.value}`}>
+                    {option.title}: {option.value}
+                  </p>
+                ))}
+              </div>
+            ) : (
+              <p className="text-grayscale-500 text-xs sm:text-base max-sm:mb-4">
+                {item.variant?.title}
+              </p>
+            )}
             <LineItemUnitPrice item={item} className="sm:hidden" />
           </div>
           <InputNumberField

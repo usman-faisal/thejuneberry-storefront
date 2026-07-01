@@ -1,10 +1,10 @@
 import { HttpTypes } from "@medusajs/types"
 
 import { getPricesForVariant } from "@lib/util/get-product-price"
-import DiscountCode from "@modules/checkout/components/discount-code"
 import CartTotals from "@modules/common/components/cart-totals"
 import Thumbnail from "@modules/products/components/thumbnail"
 import { LocalizedButtonLink, LocalizedLink } from "@/components/LocalizedLink"
+import { getLineItemSelectedOptions } from "@lib/util/line-item-options"
 
 const ItemPrice: React.FC<{
   item: HttpTypes.StoreCartLineItem | HttpTypes.StoreOrderLineItem
@@ -53,44 +53,55 @@ const CheckoutSummary = ({ cart }: { cart: HttpTypes.StoreCart }) => {
           .sort((a, b) => {
             return (a.created_at ?? "") > (b.created_at ?? "") ? -1 : 1
           })
-          .map((item) => (
-            <div key={item.id} className="flex gap-4 lg:gap-6 mb-8">
-              <LocalizedLink
-                href={`/products/${item.variant?.product?.handle}`}
-              >
-                <Thumbnail
-                  thumbnail={item.variant?.product?.thumbnail}
-                  images={item.variant?.product?.images}
-                  size="3/4"
-                  className="w-25 lg:w-33"
-                />
-              </LocalizedLink>
-              <div className="min-w-0 flex flex-col flex-1 justify-between">
-                <div className="flex flex-wrap gap-x-4 gap-y-1 justify-between">
-                  <div className="min-w-0 flex-1">
-                    <LocalizedLink
-                      href={`/products/${item.variant?.product?.handle}`}
-                      className="line-clamp-2 font-semibold leading-snug"
-                    >
-                      {item.product_title}
-                    </LocalizedLink>
+          .map((item) => {
+            const selectedOptions = getLineItemSelectedOptions(item)
+
+            return (
+              <div key={item.id} className="flex gap-4 lg:gap-6 mb-8">
+                <LocalizedLink
+                  href={`/products/${item.variant?.product?.handle}`}
+                >
+                  <Thumbnail
+                    thumbnail={item.variant?.product?.thumbnail}
+                    images={item.variant?.product?.images}
+                    size="3/4"
+                    className="w-25 lg:w-33"
+                  />
+                </LocalizedLink>
+                <div className="min-w-0 flex flex-col flex-1 justify-between">
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 justify-between">
+                    <div className="min-w-0 flex-1">
+                      <LocalizedLink
+                        href={`/products/${item.variant?.product?.handle}`}
+                        className="line-clamp-2 font-semibold leading-snug"
+                      >
+                        {item.product_title}
+                      </LocalizedLink>
+                    </div>
+                    <ItemPrice item={item} />
                   </div>
-                  <ItemPrice item={item} />
-                </div>
-                <div className="flex flex-col gap-1.5 max-lg:text-xs">
-                  {item.variant?.title && (
+                  <div className="flex flex-col gap-1.5 max-lg:text-xs">
+                    {selectedOptions.length ? (
+                      selectedOptions.map((option) => (
+                        <p key={`${option.title}-${option.value}`}>
+                          {option.title}:{" "}
+                          <span className="ml-1">{option.value}</span>
+                        </p>
+                      ))
+                    ) : item.variant?.title ? (
+                      <p>
+                        Variant:{" "}
+                        <span className="ml-1">{item.variant.title}</span>
+                      </p>
+                    ) : null}
                     <p>
-                      Variant:{" "}
-                      <span className="ml-1">{item.variant.title}</span>
+                      Quantity: <span className="ml-1">{item.quantity}</span>
                     </p>
-                  )}
-                  <p>
-                    Quantity: <span className="ml-1">{item.quantity}</span>
-                  </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
       {/*<DiscountCode cart={cart} />*/}
       <CartTotals cart={cart} />
     </>

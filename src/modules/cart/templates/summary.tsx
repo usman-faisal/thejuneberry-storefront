@@ -4,13 +4,16 @@ import { HttpTypes } from "@medusajs/types"
 
 import { LocalizedButtonLink, LocalizedLink } from "@/components/LocalizedLink"
 import CartTotals from "@modules/cart/components/cart-totals"
-import DiscountCode from "@modules/cart/components/discount-code"
 import { getCheckoutStep } from "@modules/cart/utils/getCheckoutStep"
 import { Icon } from "@/components/Icon"
 import { useCustomer } from "hooks/customer"
 import { withReactQueryProvider } from "@lib/util/react-query"
 import { getPricesForVariant } from "@lib/util/get-product-price"
 import { convertToLocale } from "@lib/util/money"
+import {
+  formatLineItemSelectedOptions,
+  getLineItemSelectedOptions,
+} from "@lib/util/line-item-options"
 
 const WHATSAPP_NUMBER = "923313365411"
 
@@ -48,8 +51,14 @@ const Summary = ({ cart }: SummaryProps) => {
           : formatPrice(item.unit_price ?? 0)
 
         const title = item.product_title ?? item.title
-        const sizeStr = item.variant?.title ? ` (Size: ${item.variant.title})` : ""
-        return `${index + 1}. ${title}${sizeStr} x${item.quantity} — ${unitPriceStr}`
+        const selectedOptions = getLineItemSelectedOptions(item)
+        const optionStr = selectedOptions.length
+          ? ` (${formatLineItemSelectedOptions(selectedOptions)})`
+          : item.variant?.title
+            ? ` (Size: ${item.variant.title})`
+            : ""
+
+        return `${index + 1}. ${title}${optionStr} x${item.quantity} — ${unitPriceStr}`
       })
       .join("\n")
 

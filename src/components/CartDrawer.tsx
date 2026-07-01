@@ -7,13 +7,16 @@ import CartTotals from "@modules/cart/components/cart-totals"
 import { LocalizedButtonLink, LocalizedLink } from "@/components/LocalizedLink"
 import { Drawer } from "@/components/Drawer"
 import { Button } from "@/components/Button"
-import DiscountCode from "@modules/cart/components/discount-code"
 import { Icon } from "@/components/Icon"
 import { getCheckoutStep } from "@modules/cart/utils/getCheckoutStep"
 import { useCart, useCartQuantity } from "hooks/cart"
 import { withReactQueryProvider } from "@lib/util/react-query"
 import { getPricesForVariant } from "@lib/util/get-product-price"
 import { convertToLocale } from "@lib/util/money"
+import {
+  formatLineItemSelectedOptions,
+  getLineItemSelectedOptions,
+} from "@lib/util/line-item-options"
 
 const WHATSAPP_NUMBER = "923313365411"
 
@@ -51,8 +54,14 @@ export const CartDrawer = withReactQueryProvider(() => {
           : formatPrice(item.unit_price ?? 0)
 
         const title = item.product_title ?? item.title
-        const sizeStr = item.variant?.title ? ` (Size: ${item.variant.title})` : ""
-        return `${index + 1}. ${title}${sizeStr} x${item.quantity} — ${unitPriceStr}`
+        const selectedOptions = getLineItemSelectedOptions(item)
+        const optionStr = selectedOptions.length
+          ? ` (${formatLineItemSelectedOptions(selectedOptions)})`
+          : item.variant?.title
+            ? ` (Size: ${item.variant.title})`
+            : ""
+
+        return `${index + 1}. ${title}${optionStr} x${item.quantity} — ${unitPriceStr}`
       })
       .join("\n")
 
@@ -99,11 +108,11 @@ Please confirm and share delivery details.`
         animateFrom="right"
         isOpen={isCartDrawerOpen}
         onOpenChange={setIsCartDrawerOpen}
-        className="max-sm:max-w-100 max-w-139 max-sm:px-6 px-12 pt-10"
+        className="max-sm:max-w-100 max-w-139 max-sm:px-6 px-12 pt-10 max-sm:pb-4 pb-6 overflow-hidden"
       >
         {({ close }) => (
           <>
-            <div className="flex justify-between mb-2">
+            <div className="flex shrink-0 justify-between mb-2">
               <div>
                 <p className="text-md">Cart</p>
               </div>
@@ -112,8 +121,8 @@ Please confirm and share delivery details.`
               </button>
             </div>
             {cart?.items?.length ? (
-              <>
-                <div className="pb-8 pr-3 sm:pr-4 overflow-y-scroll">
+              <div className="min-h-0 flex-1 overflow-y-auto pb-2 pr-3 sm:pr-4">
+                <div className="pb-8">
                   {cart?.items
                     .sort((a, b) => {
                       return (a.created_at ?? "") > (b.created_at ?? "")
@@ -130,13 +139,13 @@ Please confirm and share delivery details.`
                       )
                     })}
                 </div>
-                <div className="sticky left-0 bg-white bottom-0 pt-4 border-t border-grayscale-200 mt-auto">
+                <div className="bg-white pt-4 border-t border-grayscale-200">
                   <CartTotals isPartOfCartDrawer cart={cart} />
                   {/*<DiscountCode cart={cart} className="mt-6" />*/}
                   <LocalizedButtonLink
                     href={`/checkout/?step=${step}`}
                     isFullWidth
-                    className="mt-4"
+                    className="mt-3"
                   >
                     Proceed to checkout
                   </LocalizedButtonLink>
@@ -157,9 +166,9 @@ Please confirm and share delivery details.`
                     Order via WhatsApp
                   </button>
                 </div>
-              </>
+              </div>
             ) : isPending ? (
-              <div className="flex align-middle justify-around items-center h-screen ">
+              <div className="flex min-h-0 flex-1 align-middle justify-around items-center">
                 <Icon name="loader" className="w-10 md:w-15 animate-spin" />
               </div>
             ) : (

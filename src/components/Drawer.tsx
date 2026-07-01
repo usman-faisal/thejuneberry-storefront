@@ -31,7 +31,7 @@ export const Drawer: React.FC<DrawerProps> = ({
           className
         )}
       >
-        <UiDialog className="flex flex-col flex-1">{children}</UiDialog>
+        <UiDialog className="flex min-h-0 flex-col flex-1">{children}</UiDialog>
       </UiModal>
     </UiModalOverlay>
   )

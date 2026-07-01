@@ -355,7 +355,12 @@ export const useAddLineItem = (
   options?: UseMutationOptions<
     void,
     Error,
-    { variantId: string; quantity: number; countryCode: string | undefined },
+    {
+      variantId: string
+      quantity: number
+      countryCode: string | undefined
+      metadata?: Record<string, unknown>
+    },
     unknown
   >
 ) => {
@@ -367,6 +372,7 @@ export const useAddLineItem = (
       variantId: string
       quantity: number
       countryCode: string | undefined
+      metadata?: Record<string, unknown>
     }) => {
       const response = await addToCart({ ...payload })
 
