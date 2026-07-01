@@ -77,7 +77,7 @@ const CheckoutSummary = ({ cart }: { cart: HttpTypes.StoreCart }) => {
                     <div className="min-w-0 flex-1">
                       <LocalizedLink
                         href={`/products/${item.variant?.product?.handle}`}
-                        className="line-clamp-2 font-semibold leading-snug"
+                        className="line-clamp-1 font-semibold leading-snug"
                       >
                         {item.product_title}
                       </LocalizedLink>

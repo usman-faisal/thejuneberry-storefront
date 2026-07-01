@@ -1,5 +1,6 @@
 import { sdk } from "@lib/config"
 import { getProductsList } from "@lib/data/products"
+import { isProductSoldOut } from "@lib/util/inventory"
 import { HttpTypes } from "@medusajs/types"
 
 export const retrieveCollection = async function (id: string) {
@@ -51,7 +52,12 @@ export const getCollectionByHandle = async function (
 export const getCollectionsWithProducts = async (
   countryCode: string
 ): Promise<HttpTypes.StoreCollection[] | null> => {
-  const { collections } = await getCollectionsList(0, 3)
+  const { collections } = await getCollectionsList(0, 3, [
+    "id",
+    "title",
+    "handle",
+    "metadata",
+  ])
 
   if (!collections) {
     return null
@@ -62,23 +68,37 @@ export const getCollectionsWithProducts = async (
     .filter(Boolean) as string[]
 
   const { response } = await getProductsList({
-    queryParams: { collection_id: collectionIds },
+    queryParams: {
+      collection_id: collectionIds,
+      limit: 50,
+      fields:
+        "*variants.calculated_price,+variants.inventory_quantity,+metadata,+collection.*,+images.*",
+    },
     countryCode,
   })
 
-  response.products.forEach((product) => {
-    const collection = collections.find(
-      (collection) => collection.id === product.collection_id
+  response.products
+    .filter(
+      (product) =>
+        Boolean(
+          product.thumbnail || product.images?.some((image) => image.url)
+        ) && !isProductSoldOut(product)
     )
+    .forEach((product) => {
+      const collection = collections.find(
+        (collection) => collection.id === product.collection_id
+      )
 
-    if (collection) {
-      if (!collection.products) {
-        collection.products = []
+      if (collection) {
+        if (!collection.products) {
+          collection.products = []
+        }
+
+        if (collection.products.length < 4) {
+          collection.products.push(product)
+        }
       }
-
-      collection.products.push(product)
-    }
-  })
+    })
 
   return collections as unknown as HttpTypes.StoreCollection[]
 }

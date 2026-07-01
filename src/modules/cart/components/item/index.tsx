@@ -55,7 +55,7 @@ const Item = ({ item, className }: ItemProps) => {
         </LocalizedLink>
         <div className="min-w-0 flex-grow flex flex-col justify-between">
           <div>
-            <h2 className="line-clamp-2 text-base sm:text-md font-normal leading-snug">
+            <h2 className="line-clamp-1 text-base sm:text-md font-normal leading-snug">
               <LocalizedLink href={`/products/${handle}`}>
                 {item.product_title}
               </LocalizedLink>
