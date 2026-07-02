@@ -60,7 +60,7 @@ export const HeaderDrawer: React.FC<{
               </div>
               <div className="text-lg flex flex-col gap-8 font-medium px-8">
                 <LocalizedLink
-                  href="/"
+                  href="/store"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Shop
